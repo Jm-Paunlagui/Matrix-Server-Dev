@@ -75,9 +75,7 @@ tokenizer = pickle.load(open("config/tokenizer.pickle", "rb"))
 @app.route('/analyze_sentiment_from_db', methods=['POST'])
 def analyze_sentiment_from_db():
     """Analyzes the sentiment of a text and stores the result in the database
-    in the matrix database.
-    """
-
+    in the matrix database."""
     # Connect to the database
     if request.is_json:
         host = request.json['host']  # Required
