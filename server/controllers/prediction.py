@@ -136,7 +136,7 @@ def analyze_sentiment_from_db():
 
                 # Add the sentiment to the database with the following columns (evaluatee, evaluatee_dept, course_code,
                 # input_data_id, sentiment, analyzed) and the sentiment will be saved to the database
-                for i in range(len(predictions)):
+                for i in enumerate(predictions):
                     matrix_cursor.execute(
                         "INSERT INTO 21_predicted_data "
                         "(`input_source`, `evaluatee`, `evaluatee_dept`, `course_code`, `input_data_id`, "
