@@ -69,8 +69,9 @@ model = load_model("config/model.h5")
 tokenizer = pickle.load(open("config/tokenizer.pickle", "rb"))
 
 
-# @desc: Predict the sentiment of a text and return the result to the database with a new column containing the
-# sentiment, professor name, sentence, and date
+# @desc: Predict the sentiment of a text and return the result to the
+# database with a new column containing the sentiment, professor name
+# sentence, and date
 @app.route('/analyze_sentiment_from_db', methods=['POST'])
 def analyze_sentiment_from_db():
     # Connect to the database
@@ -111,8 +112,8 @@ def analyze_sentiment_from_db():
                 infor_input_data_id = [x[3] for x in info]
                 data = [x[0] for x in data]
 
-                # @desc: if the data is NoneType, then it will be replaced with an empty string to avoid errors
-                # when lower casing the data
+                # @desc: if the data is NoneType, then it will be replaced with an empty string
+                # to avoid errors when lower casing the data
                 for i in range(len(data)):
                     if data[i] is None:
                         data[i] = ''
@@ -134,8 +135,9 @@ def analyze_sentiment_from_db():
                 now = datetime.now()
                 analyzed = now.strftime("%A %d %B, %Y at %I:%M:%S %p")
 
-                # Add the sentiment to the database with the following columns (evaluatee, evaluatee_dept, course_code,
-                # input_data_id, sentiment, analyzed) and the sentiment will be saved to the database
+                # Add the sentiment to the database with the following columns (evaluatee,
+                # evaluatee_dept, course_code, input_data_id, sentiment, analyzed) and
+                # the sentiment will be saved to the database
                 for i in enumerate(predictions):
                     matrix_cursor.execute(
                         "INSERT INTO 21_predicted_data "
