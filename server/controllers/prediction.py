@@ -131,7 +131,8 @@ def analyze_sentiment_from_db():
                 now = datetime.now()
                 analyzed = now.strftime("%A %d %B, %Y at %I:%M:%S %p")
 
-                # Add the sentiment to the database
+                # Add the sentiment to the database with the following columns (evaluatee, evaluatee_dept, course_code,
+                # input_data_id, sentiment, analyzed) and the sentiment will be saved to the database
                 for i in range(len(predictions)):
                     matrix_cursor.execute(
                         "INSERT INTO 21_predicted_data "
