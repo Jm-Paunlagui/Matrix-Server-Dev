@@ -97,12 +97,11 @@ def analyze_sentiment_from_db():
                 conn = mysql.connector.connect(
                     host=host, user=user, password=password, database=database)
                 cursor = conn.cursor()
-                cursor.execute("SELECT {} FROM {}".format(input_source, table))
+                cursor.execute("SELECT %s FROM %s" % input_source, table)
                 data = cursor.fetchall()
 
-                cursor.execute("SELECT {}, {}, {}, {} "
-                               "FROM {}".
-                               format(evaluatee, evaluatee_dept, course_code, input_data_id, table))
+                cursor.execute("SELECT %s %s %s %s %s FROM %s" %
+                               evaluatee, evaluatee_dept, course_code, input_data_id, table)
                 info = cursor.fetchall()
 
                 infor_evaluatee = [x[0] for x in info]
@@ -142,8 +141,8 @@ def analyze_sentiment_from_db():
                         "(`input_source`, `evaluatee`, `evaluatee_dept`, `course_code`, `input_data_id`, "
                         "`input_data`, `input_sentiment`, `is_predicted`, `date_analyzed`, "
                         "`school_year_and_semester`) "
-                        "VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
-                            input_source, infor_evaluatee[i], infor_evaluatee_dept[i], infor_course_code[i],
+                        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                        (input_source, infor_evaluatee[i], infor_evaluatee_dept[i], infor_course_code[i],
                             infor_input_data_id[i], data[i], predictions[i],
                             '1', analyzed, school_year_and_semester))
 
