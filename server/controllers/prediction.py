@@ -97,11 +97,12 @@ def analyze_sentiment_from_db():
                 conn = mysql.connector.connect(
                     host=host, user=user, password=password, database=database)
                 cursor = conn.cursor()
-                cursor.execute("SELECT %s FROM %s" % input_source, table)
+                cursor.execute("SELECT %s FROM %s",
+                               (input_source, table))
                 data = cursor.fetchall()
 
-                cursor.execute("SELECT %s %s %s %s %s FROM %s" %
-                               evaluatee, evaluatee_dept, course_code, input_data_id, table)
+                cursor.execute("SELECT %s %s %s %s %s FROM %s",
+                               (evaluatee, evaluatee_dept, course_code, input_data_id, table))
                 info = cursor.fetchall()
 
                 infor_evaluatee = [x[0] for x in info]
