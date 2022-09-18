@@ -154,6 +154,6 @@ def analyze_sentiment_from_db():
                     {'status': 'success', 'message': 'Input data analyzed and saved',
                      'column_selected': input_source, })
             except mysql.connector.Error as err:
-                return jsonify({'status': 'error', 'message': 'Connection failed: {}'.format(err)})
+                return jsonify({'status': 'error', 'message': f"Connection failed: {err}"})
     else:
         return jsonify({'status': 'error', 'message': 'Invalid request'})
