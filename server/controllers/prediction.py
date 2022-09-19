@@ -11,7 +11,8 @@ import tensorflow as tf
 
 from keras.models import load_model
 
-connect_to_matrix = mysql.connector.connect(host="localhost", user="root", password="", database="production_saer")
+connect_to_matrix = mysql.connector.connect(
+    host="localhost", user="root", password="", database="production_saer")
 matrix_cursor = connect_to_matrix.cursor(buffered=True)
 
 # @desc: Get all the tables and columns from a database
@@ -85,14 +86,16 @@ def analyze_sentiment_from_db():
         course_code = request.json['course_code']  # Required
         input_data_id = request.json['input_data_id']  # Required
 
-        school_year_and_semester = request.json['school_year_and_semester']  # Required
+        # Required
+        school_year_and_semester = request.json['school_year_and_semester']
 
         # Type confirm to confirm the prediction and save it to the database
         type_confirm = request.json['type_confirm']
 
         if type_confirm == input_source:
             try:
-                conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+                conn = mysql.connector.connect(
+                    host=host, user=user, password=password, database=database)
                 cursor = conn.cursor()
                 cursor.execute("SELECT %s FROM %s" % (input_source, table))
                 data = cursor.fetchall()
@@ -142,8 +145,10 @@ def analyze_sentiment_from_db():
                         "`input_data`, `input_sentiment`, `is_predicted`, `date_analyzed`, "
                         "`school_year_and_semester`) "
                         "VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
-                            input_source, infor_evaluatee[i[0]], infor_evaluatee_dept[i[0]], infor_course_code[i[0]],
-                            infor_input_data_id[i[0]], raw[i[0]], predictions[i[0]], 1, analyzed,
+                            input_source, infor_evaluatee[i[0]
+                                                          ], infor_evaluatee_dept[i[0]], infor_course_code[i[0]],
+                            infor_input_data_id[i[0]], raw[i[0]
+                                                           ], predictions[i[0]], 1, analyzed,
                             school_year_and_semester), multi=True)
 
                 connect_to_matrix.commit()
