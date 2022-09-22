@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from config.app import app
+from server.config.app import app
 import mysql.connector
 from flask import jsonify, request
 from datetime import datetime
@@ -12,7 +12,7 @@ import tensorflow as tf
 from keras.models import load_model
 
 connect_to_matrix = mysql.connector.connect(
-    host="localhost", user="root", password="", database="production_saer")
+    host="localhost", user="root", password="", database="matrix")
 matrix_cursor = connect_to_matrix.cursor(buffered=True)
 
 # @desc: Get all the tables and columns from a database
@@ -162,20 +162,20 @@ def analyze_sentiment_from_db():
                 # (evaluatee, evaluatee_dept, course_code, input_data_id,
                 # sentiment, analyzed) and the sentiment will be saved
                 # to the database
-                for i in enumerate(predictions):
-                    matrix_cursor.execute(
-                        "INSERT INTO 21_predicted_data "
-                        "(`input_source`, `evaluatee`, `evaluatee_dept`, `course_code`, `input_data_id`, "
-                        "`input_data`, `input_sentiment`, `is_predicted`, `date_analyzed`, "
-                        "`school_year_and_semester`) "
-                        "VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
-                            input_source, infor_evaluatee[i[0]
-                                                          ], infor_evaluatee_dept[i[0]], infor_course_code[i[0]],
-                            infor_input_data_id[i[0]], raw[i[0]
-                                                           ], predictions[i[0]], 1, analyzed,
-                            school_year_and_semester))
-
-                connect_to_matrix.commit()
+                # for i in enumerate(predictions):
+                #     matrix_cursor.execute(
+                #         "INSERT INTO 21_predicted_data "
+                #         "(`input_source`, `evaluatee`, `evaluatee_dept`, `course_code`, `input_data_id`, "
+                #         "`input_data`, `input_sentiment`, `is_predicted`, `date_analyzed`, "
+                #         "`school_year_and_semester`) "
+                #         "VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
+                #             input_source, infor_evaluatee[i[0]
+                #                                           ], infor_evaluatee_dept[i[0]], infor_course_code[i[0]],
+                #             infor_input_data_id[i[0]], raw[i[0]
+                #                                            ], predictions[i[0]], 1, analyzed,
+                #             school_year_and_semester))
+                #
+                # connect_to_matrix.commit()
                 return jsonify(
                     {'status': 'success', 'message': 'Data source analyzed and saved',
                      'column_selected': input_source, })
