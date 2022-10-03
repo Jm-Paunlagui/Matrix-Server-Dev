@@ -80,5 +80,3 @@ def authenticate():
         return jsonify({"status": "error", "message": "Unauthorized access"}), 401
 
     return jsonify({"status": "success", "message": "User authenticated successfully"}), 200
-
-

@@ -44,7 +44,8 @@ def insert_user(email, first_name, last_name, username, password, role):
 # @desc: For user authentication
 def authenticate_user(username, password):
     cursor = db.cursor(buffered=True)
-    cursor.execute("SELECT `username`, `password` FROM `00_user` WHERE username = %s", (username,))
+    cursor.execute(
+        "SELECT `username`, `password` FROM `00_user` WHERE username = %s", (username,))
     user = cursor.fetchone()
     cursor.close()
 
