@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 import os
 
@@ -8,7 +9,8 @@ from keras.models import load_model
 app = Flask(__name__)
 
 # Enable CORS for all domains on all routes (for development purposes)
-CORS(app)
+CORS(app, supports_credentials=True)
+bcrypt = Bcrypt(app)
 
 
 # @desc: This is the main route of the application.
