@@ -1,4 +1,3 @@
-
 import re
 import hashlib
 
@@ -124,8 +123,8 @@ def register():
             # if validation is true, insert the user to the database
             if validation is True:
                 cursor.execute("INSERT INTO `00_user` (`email`, `first_name`, `last_name`, `username`, `password`, "
-                               "`role`, `gravatar`, `date_created`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                               (email, first_name, last_name, username, password, role, image, now))
+                               "`role`, `date_created`) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                               (email, first_name, last_name, username, password, role, now))
                 conn.commit()
                 return jsonify({'status': 'success', 'message': 'User registered successfully'})
             else:
