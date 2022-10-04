@@ -1,0 +1,7 @@
+flask
+flask-bcrypt
+flask-cors
+flask-session
+mysql-connector-python
+redis
+tensorflow
