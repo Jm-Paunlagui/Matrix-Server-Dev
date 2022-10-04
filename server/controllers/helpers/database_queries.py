@@ -70,7 +70,8 @@ def authenticated_user():
     if user_id is None:
         return False
 
-    cursor.execute("SELECT `user_id` FROM `00_user` WHERE user_id = %s", (user_id,))
+    cursor.execute(
+        "SELECT `user_id` FROM `00_user` WHERE user_id = %s", (user_id,))
     user = cursor.fetchone()
 
     return user
@@ -80,7 +81,8 @@ def authenticated_user():
 def redirect_to():
     cursor = db.cursor(buffered=True)
     user_id = session.get('user_id')
-    cursor.execute("SELECT `role` FROM `00_user` WHERE user_id = %s", (user_id,))
+    cursor.execute(
+        "SELECT `role` FROM `00_user` WHERE user_id = %s", (user_id,))
     role = cursor.fetchone()
     cursor.close()
 

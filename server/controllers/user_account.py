@@ -99,8 +99,3 @@ def signout():
         return jsonify({"status": "error", "message": "Session not found"}), 404
 
     return jsonify({"status": "success", "message": "User signed out successfully"}), 200
-
-
-
-
-
