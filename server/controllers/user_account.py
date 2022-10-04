@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from server.config.app import app, bcrypt
+from server.config.app import app
 import server.controllers.helpers.input_validation as iv
 import server.controllers.helpers.database_queries as dq
 import mysql.connector
