@@ -1,7 +1,10 @@
 import mysql.connector
 from datetime import datetime
-from server.config.app import bcrypt
+from server.config.app import app, bcrypt
+from flask import session
+from flask_session import Session
 
+server_session = Session(app)
 
 # global variables
 db = mysql.connector.connect(
@@ -45,14 +48,59 @@ def insert_user(email, first_name, last_name, username, password, role):
 def authenticate_user(username, password):
     cursor = db.cursor(buffered=True)
     cursor.execute(
-        "SELECT `username`, `password` FROM `00_user` WHERE username = %s", (username,))
+        "SELECT `user_id`,`username`, `password` FROM `00_user` WHERE username = %s", (username,))
     user = cursor.fetchone()
     cursor.close()
 
     if user is None:
         return False
 
-    if not bcrypt.check_password_hash(user[1], password):
+    if not bcrypt.check_password_hash(user[2], password):
         return False
 
+    session['user_id'] = user[0]
+
     return True
+
+
+def authenticated_user():
+    cursor = db.cursor(buffered=True)
+    user_id = session.get('user_id')
+
+    if user_id is None:
+        return False
+
+    cursor.execute("SELECT `user_id` FROM `00_user` WHERE user_id = %s", (user_id,))
+    user = cursor.fetchone()
+
+    return user
+
+
+# @desc: Gets the user's role from the database and redirects to the appropriate page
+def redirect_to():
+    cursor = db.cursor(buffered=True)
+    user_id = session.get('user_id')
+    cursor.execute("SELECT `role` FROM `00_user` WHERE user_id = %s", (user_id,))
+    role = cursor.fetchone()
+    cursor.close()
+
+    if role[0] == "5":
+        return "/admin/dashboard"
+    elif role[0] == "4":
+        return "/user/dashboard"
+    else:
+        return "/"
+
+
+# @desc: Removes the user's session
+def remove_session():
+    # get the user's session
+    user_id = session.get('user_id')
+
+    # if the user's session exists, remove it
+    if user_id is not None:
+        session.pop('user_id', None)
+        session.clear()
+        return True
+    else:
+        return False

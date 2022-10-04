@@ -5,14 +5,7 @@ import server.controllers.helpers.database_queries as dq
 import mysql.connector
 from datetime import datetime
 
-
-# @desc: Timestamps
-def timestamps():
-    # @format: Day, Month, Year, @ Hour:Minute:Second
-    return datetime.now().strftime("%A, %B %d, %Y @ %I:%M:%S %p")
-
-
-# global variables
+# @desc: Connection to the database
 db = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -20,6 +13,12 @@ db = mysql.connector.connect(
     database="matrix"
 )
 cursor = db.cursor(buffered=True)
+
+
+# @desc: Timestamps
+def timestamps():
+    # @format: Day, Month, Year, @ Hour:Minute:Second
+    return datetime.now().strftime("%A, %B %d, %Y @ %I:%M:%S %p")
 
 
 # @desc: User registration route
@@ -79,4 +78,29 @@ def authenticate():
     if not dq.authenticate_user(username, password):
         return jsonify({"status": "error", "message": "Unauthorized access"}), 401
 
-    return jsonify({"status": "success", "message": "User authenticated successfully"}), 200
+    return jsonify({"status": "success", "message": "User authenticated successfully",
+                    "path": dq.redirect_to()}), 200
+
+
+# @desc: Gets the authenticated user by id
+@app.route("/get_user", methods=["GET"])
+def get_authenticated_user():
+    if not dq.authenticated_user():
+        return jsonify({"status": "error", "message": "Unauthorized access"}), 401
+
+    user = dq.authenticated_user()
+    return jsonify({"status": "success", "message": "User retrieved successfully", "user_id": user}), 200
+
+
+# @desc: Signs out the authenticated user by id and deletes the session
+@app.route("/sign-out", methods=["GET"])
+def signout():
+    if not dq.remove_session():
+        return jsonify({"status": "error", "message": "Session not found"}), 404
+
+    return jsonify({"status": "success", "message": "User signed out successfully"}), 200
+
+
+
+
+
