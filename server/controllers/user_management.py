@@ -14,18 +14,6 @@ conn = mysql.connector.connect(
 cursor = conn.cursor()
 
 
-# @desc test route to check if the server is running
-@app.route('/test', methods=['GET'])
-def test():
-    # get user from database
-    cursor.execute("SELECT * FROM `00_user`")
-    user = cursor.fetchall()
-    if user:
-        return jsonify({"message": "User found", "user": user}), 200
-    else:
-        return jsonify({"message": "Create a user"}), 200
-
-
 # Authentication
 @app.route('/login', methods=['POST'])
 def auth():
@@ -60,77 +48,6 @@ def auth():
             return jsonify({'status': 'error', 'message': 'Invalid username or password'})
     else:
         return jsonify({'status': 'error', 'message': 'Invalid request'})
-
-
-# Validation of create and update user
-def validate_user(email, first_name, last_name, username, password, role):
-    # if email, name, username, password, role is empty, return error message
-    if email == '' or first_name == '' or last_name == '' or username == '' or password == '' or role == '':
-        return jsonify({'status': 'error', 'message': 'Please fill in all the fields'})
-    # validate the email using the regex
-    if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-        return jsonify({'status': 'error', 'message': 'Invalid email'})
-
-    # Check if the name is invalid using the regex
-    if not re.match(r"[a-zA-Z]+", first_name) or not re.match(r"[a-zA-Z]+", last_name):
-        return jsonify({'status': 'error', 'message': 'Invalid name'})
-
-    # Check the length of the username if it is less than 5 characters or more than 20 characters
-    if len(username) < 5 or len(username) > 20:
-        return jsonify({'status': 'error', 'message': 'Username must be between 5 and 20 characters'})
-
-    # Check the length of the password if it is less than 5 characters or more than 20 characters
-    if len(password) < 8 or len(password) > 20:
-        return jsonify({'status': 'error', 'message': 'Password must be between 8 and 20 characters'})
-    # Check if the password is weak using the regex
-    if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,20}$", password):
-        return jsonify({'status': 'error', 'message': 'Password must be alphanumeric'})
-    # Check if the role is valid
-    if role != '3' and role != '4' and role != '5':
-        return jsonify({'status': 'error', 'message': 'Invalid role'})
-    else:
-        return True
-
-
-# @jwt_required()
-@app.route('/register', methods=['POST'])
-def register():
-    if request.form:
-        email = request.form['email']
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        username = request.form['username']
-        password = request.form['password']
-        role = request.form['role']
-        # Gravatar image url of the user
-        image = 'https://www.gravatar.com/avatar/' + \
-            hashlib.md5(email.encode('utf-8')).hexdigest() + '?s=600&d=retro'
-        # image = request.files['image']
-        # save the image to the server and get the path of the image to be saved in the database later
-        # image_path = save_image(image)
-        now = datetime.now()
-
-        # check if one of them exists
-        cursor.execute(
-            "SELECT * FROM `00_user` WHERE username = %s OR email = %s", (username, email))
-        is_exist = cursor.fetchall()
-        if is_exist:
-            return jsonify({'status': 'error', 'message': 'Username or email already exists'})
-        else:
-            # validate the user
-            validation = validate_user(
-                email, first_name, last_name, username, password, role)
-            # if validation is true, insert the user to the database
-            if validation is True:
-                cursor.execute("INSERT INTO `00_user` (`email`, `first_name`, `last_name`, `username`, `password`, "
-                               "`role`, `date_created`) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                               (email, first_name, last_name, username, password, role, now))
-                conn.commit()
-                return jsonify({'status': 'success', 'message': 'User registered successfully'})
-            else:
-                return validation
-    else:
-        return jsonify({'status': 'something went wrong'})
 
 
 # Get User Profile
