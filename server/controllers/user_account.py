@@ -85,11 +85,15 @@ def authenticate():
 # @desc: Gets the authenticated user by id
 @app.route("/get_user", methods=["GET"])
 def get_authenticated_user():
-    if not dq.authenticated_user():
+    user = dq.authenticated_user()
+    if not user:
         return jsonify({"status": "error", "message": "Unauthorized access"}), 401
 
-    user = dq.authenticated_user()
-    return jsonify({"status": "success", "message": "User retrieved successfully", "user_id": user}), 200
+    return jsonify({"status": "success", "message": "User retrieved successfully",
+                    "user": {"id": user[0], "email": user[1], "first_name": user[2],
+                              "last_name": user[3], "username": user[4], "password": user[5]
+                              }}
+                   ), 200
 
 
 # @desc: Signs out the authenticated user by id and deletes the session
