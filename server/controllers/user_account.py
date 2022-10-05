@@ -92,7 +92,7 @@ def get_authenticated_user():
     return jsonify({"status": "success", "message": "User retrieved successfully",
                     "user": {"id": user[0], "email": user[1], "first_name": user[2],
                               "last_name": user[3], "username": user[4], "password": user[5]
-                              }}
+                             }}
                    ), 200
 
 
