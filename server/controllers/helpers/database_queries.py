@@ -24,7 +24,9 @@ def timestamps():
 # @desc: Check if users email exists
 def check_email_exists(email):
     cursor = db.cursor(buffered=True)
-    cursor.execute("SELECT email FROM `00_user` WHERE email = %s", (email,))
+    cursor.execute("SELECT email "
+                   "FROM `00_user` "
+                   "WHERE email = %s", (email,))
     is_email = cursor.fetchone()
     cursor.close()
     if is_email:
@@ -48,7 +50,9 @@ def insert_user(email, first_name, last_name, username, password, role):
 def authenticate_user(username, password):
     cursor = db.cursor(buffered=True)
     cursor.execute(
-        "SELECT `user_id`,`username`, `password` FROM `00_user` WHERE username = %s", (username,))
+        "SELECT `user_id`,`username`, `password` "
+        "FROM `00_user` "
+        "WHERE username = %s", (username,))
     user = cursor.fetchone()
     cursor.close()
 
@@ -63,6 +67,7 @@ def authenticate_user(username, password):
     return True
 
 
+# @desc: Gets the  user's id
 def authenticated_user():
     cursor = db.cursor(buffered=True)
     user_id = session.get('user_id')
@@ -71,7 +76,9 @@ def authenticated_user():
         return False
 
     cursor.execute(
-        "SELECT `user_id` FROM `00_user` WHERE user_id = %s", (user_id,))
+        "SELECT `user_id`, `email`, `first_name`, `last_name`, `username`, `password` "
+        "FROM `00_user` "
+        "WHERE user_id = %s", (user_id,))
     user = cursor.fetchone()
 
     return user
@@ -82,7 +89,9 @@ def redirect_to():
     cursor = db.cursor(buffered=True)
     user_id = session.get('user_id')
     cursor.execute(
-        "SELECT `role` FROM `00_user` WHERE user_id = %s", (user_id,))
+        "SELECT `role` "
+        "FROM `00_user` "
+        "WHERE user_id = %s", (user_id,))
     role = cursor.fetchone()
     cursor.close()
 
