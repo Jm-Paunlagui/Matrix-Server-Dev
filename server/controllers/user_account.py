@@ -76,7 +76,7 @@ def authenticate():
         return jsonify({"status": "error", "message": "Not a valid username or password"}), 400
 
     if not dq.authenticate_user(username, password):
-        return jsonify({"status": "error", "message": "Unauthorized access"}), 401
+        return jsonify({"status": "error", "message": "Invalid username or password"}), 401
 
     return jsonify({"status": "success", "message": "User authenticated successfully",
                     "path": dq.redirect_to()}), 200
@@ -103,3 +103,29 @@ def signout():
         return jsonify({"status": "error", "message": "Session not found"}), 404
 
     return jsonify({"status": "success", "message": "User signed out successfully"}), 200
+
+
+# @desc: Resets the password of the authenticated user by email address and sends a new password to the user
+@app.route("/reset-password", methods=["POST"])
+def reset_password():
+    if not request.is_json:
+        return jsonify({"status": "error", "message": "Invalid request"})
+
+    email = request.json["email"]
+
+    if not iv.validate_empty_fields(email):
+        return jsonify({"status": "error", "message": "Please fill in all the fields"}), 400
+    if not iv.validate_email(email):
+        return jsonify({"status": "error", "message": "Invalid email address"}), 400
+
+    if not dq.check_email_exists(email):
+        return jsonify({"status": "error", "message": "Email address does not exist"}), 404
+
+    # @desc: generates a new password and sends it to the user
+    dq.password_reset(email)
+
+    # @desc: removes the session
+    dq.remove_session()
+
+    return jsonify({"status": "success", "message": "Password reset successfully"}), 200
+
