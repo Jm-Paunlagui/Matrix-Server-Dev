@@ -41,7 +41,8 @@ app.secret_key = "f9a0b8d7c6a5b4e3d2c1f8g7h6j5k4l3m2n1o0p9q8r7s6t5u4v3w2x1y0z9a8
 app.config.from_object(__name__)
 
 # Cross-Origin Resource Sharing configuration for the Flask app to allow requests from the client
-CORS(app, supports_credentials=True, methods="GET,POST,PUT,DELETE,OPTIONS", origins="http://localhost:3000")
+CORS(app, supports_credentials=True,
+     methods="GET,POST,PUT,DELETE,OPTIONS", origins="http://localhost:3000")
 
 # @desc: The bcrypt instance
 bcrypt = Bcrypt(app)
