@@ -128,4 +128,3 @@ def reset_password():
     dq.remove_session()
 
     return jsonify({"status": "success", "message": "Password reset successfully"}), 200
-

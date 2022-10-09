@@ -150,7 +150,8 @@ def password_generator():
     password_characters = string.ascii_letters + string.digits + special_characters
 
     # @desc: Generate the password
-    password = ''.join(random.choice(password_characters) for _ in range(password_length))
+    password = ''.join(random.choice(password_characters)
+                       for _ in range(password_length))
 
     return password
 
@@ -177,7 +178,8 @@ def password_reset(email):
     cursor.close()
 
     # send the new password to the user's email address
-    msg = Message("Password Reset", sender="service.matrix.ai@gmail.com", recipients=[email])
+    msg = Message("Password Reset",
+                  sender="service.matrix.ai@gmail.com", recipients=[email])
     # Style the email message using HTML
     # @TODO: Design the email message using HTML and CSS and add the new password to the message body
     msg.html = f"""
