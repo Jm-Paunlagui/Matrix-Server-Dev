@@ -5,6 +5,7 @@ from flask_cors import CORS
 from flask_mail import Mail
 import os
 import redis
+import mysql.connector
 
 from keras.models import load_model
 
@@ -46,6 +47,14 @@ CORS(app, supports_credentials=True,
 
 # @desc: The bcrypt instance
 bcrypt = Bcrypt(app)
+
+# @desc: MySQL database connection
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="",
+    database="matrix"
+)
 
 
 # @desc: This is the main route of the application.
