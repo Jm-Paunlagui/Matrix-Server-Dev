@@ -147,4 +147,3 @@ def reset_password(token: str):
     dq.password_reset(password, token)
 
     return jsonify({"status": "success", "message": "Password reset successfully"}), 200
-

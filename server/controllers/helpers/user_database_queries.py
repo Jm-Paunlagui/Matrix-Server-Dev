@@ -258,11 +258,13 @@ def password_reset_link(email: str):
     password_reset_serializer = URLSafeTimedSerializer(app.secret_key)
 
     # @desc: Generate the password reset link
-    password_reset_url = password_reset_serializer.dumps(email, salt='password-reset-salt')
+    password_reset_url = password_reset_serializer.dumps(
+        email, salt='password-reset-salt')
     print(password_reset_url)
 
     # desc: Send the password reset link to the user's email address
-    msg = Message('Password Reset Link - Matrix Lab', sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
+    msg = Message('Password Reset Link - Matrix Lab',
+                  sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
 
     # @desc: The email's content and format (HTML)
     msg.html = f"""
@@ -290,7 +292,8 @@ def password_reset(password_reset_url: str, password: str):
     # @desc: Check if the password reset link is valid
     try:
         # @desc: Get the user's email address from the password reset link
-        email = password_reset_serializer.loads(password_reset_url, salt='password-reset-salt', max_age=300)
+        email = password_reset_serializer.loads(
+            password_reset_url, salt='password-reset-salt', max_age=300)
     except SignatureExpired:
         return False
 
@@ -309,4 +312,3 @@ def password_reset(password_reset_url: str, password: str):
     cursor.close()
 
     return True
-
