@@ -1,4 +1,8 @@
 from datetime import datetime
+
+from itsdangerous import SignatureExpired
+from itsdangerous.url_safe import URLSafeTimedSerializer
+
 from server.config.app import app, bcrypt, mail, db
 from flask import session
 from flask_session import Session
@@ -12,7 +16,7 @@ server_session = Session(app)
 
 
 # @desc: Check if users email exists
-def check_email_exists(email):
+def check_email_exists(email: str):
     cursor = db.cursor(buffered=True)
     cursor.execute("SELECT email "
                    "FROM `00_user` "
@@ -26,7 +30,7 @@ def check_email_exists(email):
 
 
 # @desc Checks if user id exists
-def check_user_id(user_id):
+def check_user_id(user_id: int):
     cursor = db.cursor(buffered=True)
     cursor.execute("SELECT `user_id` "
                    "FROM `00_user` "
@@ -39,29 +43,8 @@ def check_user_id(user_id):
         return False
 
 
-# @desc: Password text generator for the user's password
-def password_generator():
-    # @desc: Password length
-    password_length = 15
-
-    # @desc: Custom special characters for the password
-    special_characters = "#?!@$%^&*-"
-
-    # @desc: Password characters
-    password_characters = string.ascii_letters + string.digits + special_characters
-
-    # @desc: Generate the password should be 8 characters long and alphanumeric and special characters
-    passwords = ''.join(random.choices(password_characters, k=password_length))
-
-    # @desc: Check if the password is valid
-    if validate_password(passwords):
-        return passwords
-    else:
-        return password_generator()
-
-
 # @desc: Password hasher checker function
-def password_hash_check(hashed_password, password):
+def password_hash_check(hashed_password: str, password: str):
     if not bcrypt.check_password_hash(hashed_password, password):
         return False
     else:
@@ -69,7 +52,7 @@ def password_hash_check(hashed_password, password):
 
 
 # @desc: Password hasher function
-def password_hasher(password):
+def password_hasher(password: str):
     hashed_password = bcrypt.generate_password_hash(password)
     return hashed_password
 
@@ -81,7 +64,7 @@ def timestamps():
 
 
 # @desc: Creates a new user account
-def create_user(email, first_name, last_name, username, password, role):
+def create_user(email: str, first_name: str, last_name: str, username: str, password: str, role: int):
     cursor = db.cursor(buffered=True)
 
     # @desc: Check if the user's email exists
@@ -105,7 +88,7 @@ def create_user(email, first_name, last_name, username, password, role):
 
 
 # @desc: Flags delete the user's account based on the user's id
-def delete_user(user_id):
+def delete_user(user_id: int):
     cursor = db.cursor(buffered=True)
 
     # @desc: Check if the user's id exists
@@ -125,7 +108,7 @@ def delete_user(user_id):
 
 
 # @desc: Permanently deletes the user's account based on the user's id
-def delete_user_permanently(user_id):
+def delete_user_permanently(user_id: int):
     cursor = db.cursor(buffered=True)
 
     # @desc: Check if the user's id exists
@@ -159,7 +142,7 @@ def read_flagged_deleted_users():
 
 
 # @desc: Restores the user's account based on the user's id
-def restore_user(user_id):
+def restore_user(user_id: int):
     cursor = db.cursor(buffered=True)
 
     # @desc: Check if the user's id exists
@@ -179,7 +162,7 @@ def restore_user(user_id):
 
 
 # @desc: For user authentication
-def authenticate_user(username, password):
+def authenticate_user(username: str, password: str):
     cursor = db.cursor(buffered=True)
 
     cursor.execute(
@@ -265,44 +248,65 @@ def remove_session():
         return False
 
 
-# @desc: Resets the user's password by entering the email address and send the new password to the user's email address
-def password_reset(email):
-    cursor = db.cursor(buffered=True)
-
+# @desc: Sends the user a password reset link via email
+def password_reset_link(email: str):
     # @desc: Check if the email address exists
     if not check_email_exists(email):
         return False
 
-    # @desc: Generate a new password
-    new_password = password_generator()
+    # @desc: Serializer for the password reset link and the expiration time of the link is 5 minutes
+    password_reset_serializer = URLSafeTimedSerializer(app.secret_key)
 
-    # @desc: Hash the new password
-    hashed_password = password_hasher(new_password)
+    # @desc: Generate the password reset link
+    password_reset_url = password_reset_serializer.dumps(email, salt='password-reset-salt')
+    print(password_reset_url)
+
+    # desc: Send the password reset link to the user's email address
+    msg = Message('Password Reset Link - Matrix Lab', sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
+
+    # @desc: The email's content and format (HTML)
+    msg.html = f"""
+    <html>
+            <body>
+                <h1>Matrix AI</h1>
+                <p>Hi {email},</p>
+                <p>You have requested to reset your password. Please click the link below to reset your password.</p>
+                <p><a href="{"http://localhost:3000/reset-password/" + password_reset_url}">Reset Password</a></p>
+            </body>
+        </html>
+    """
+
+    # @desc: Send the email
+    mail.send(msg)
+
+    return True
+
+
+# @desc: Checks if the password reset link is valid, and if it is valid, reset the user's password
+def password_reset(password_reset_url: str, password: str):
+    # @desc: Serializer for the password reset link
+    password_reset_serializer = URLSafeTimedSerializer(app.secret_key)
+
+    # @desc: Check if the password reset link is valid
+    try:
+        # @desc: Get the user's email address from the password reset link
+        email = password_reset_serializer.loads(password_reset_url, salt='password-reset-salt', max_age=300)
+    except SignatureExpired:
+        return False
+
+    # @desc: Hash the user's password
+    password_hash = password_hasher(password)
+
+    cursor = db.cursor(buffered=True)
 
     # @desc: Update the user's password
     cursor.execute("UPDATE `00_user` "
-                   "SET `password` = %s "
-                   "WHERE `email` = %s", (hashed_password, email))
+                   "SET password = %s "
+                   "WHERE email = %s", (password_hash, email))
 
     # @desc: Commit the changes to the database and close the cursor
     db.commit()
     cursor.close()
 
-    # send the new password to the user's email address
-    msg = Message("Password Reset",
-                  sender="service.matrix.ai@gmail.com", recipients=[email])
-    # Style the email message using HTML
-    # @TODO: Design the email message using HTML and CSS and add the new password to the message body
-    msg.html = f"""
-        <html>
-            <body>
-                <h1>Matrix AI</h1>
-                <p>Hi {email},</p>
-                <p>Your new password is <b>{new_password}</b></p>
-                <p>Thank you for using Matrix AI</p>
-            </body>
-        </html>
-        """
-    mail.send(msg)
-
     return True
+

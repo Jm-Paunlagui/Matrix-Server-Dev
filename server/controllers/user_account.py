@@ -103,9 +103,9 @@ def signout():
     return jsonify({"status": "success", "message": "User signed out successfully"}), 200
 
 
-# @desc: Resets the password of the authenticated user by email address and sends a new password to the user
-@app.route("/reset-password", methods=["POST"])
-def reset_password():
+# @desc: Sends a password reset link to the user's email address
+@app.route("/forgot-password", methods=["POST"])
+def forgot_password():
     if not request.is_json:
         return jsonify({"status": "error", "message": "Invalid request"})
 
@@ -120,9 +120,31 @@ def reset_password():
         return jsonify({"status": "error", "message": "Email address does not exist"}), 404
 
     # @desc: generates a new password and sends it to the user
-    dq.password_reset(email)
-
-    # @desc: removes the session
-    dq.remove_session()
+    dq.password_reset_link(email)
 
     return jsonify({"status": "success", "message": "Password reset successfully, Please check your email"}), 200
+
+
+# @desc: Resets the password of the user based on the token sent to the user's email address
+@app.route("/reset-password/<token>", methods=["POST"])
+def reset_password(token: str):
+    if not request.is_json:
+        return jsonify({"status": "error", "message": "Invalid request"})
+
+    password = request.json["password"]
+
+    if not iv.validate_empty_fields(password):
+        return jsonify({"status": "error", "message": "Please fill in all the fields"}), 400
+    if not iv.validate_password(password):
+        return jsonify({"status": "error", "message": "Password must be alphanumeric "
+                                                      "and contain at least one uppercase, one lowercase, "
+                                                      "one number and one special character"}), 400
+
+    if not dq.password_reset(token, password):
+        return jsonify({"status": "error", "message": "Token session expired"}), 404
+
+    # @desc: resets the password of the user
+    dq.password_reset(password, token)
+
+    return jsonify({"status": "success", "message": "Password reset successfully"}), 200
+
