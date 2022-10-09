@@ -16,7 +16,7 @@ def validate_email(email):
 
 
 def validate_password(password):
-    if re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,20}$").match(password):
+    if re.compile(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$").match(password):
         return True
     else:
         return False
