@@ -42,7 +42,7 @@ def check_user_id(user_id):
 # @desc: Password text generator for the user's password
 def password_generator():
     # @desc: Password length
-    password_length = 13
+    password_length = 15
 
     # @desc: Custom special characters for the password
     special_characters = "#?!@$%^&*-"
