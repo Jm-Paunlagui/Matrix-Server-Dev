@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from server.config.app import app
 import server.controllers.helpers.input_validation as iv
-import server.controllers.helpers.database_queries as dq
+import server.controllers.helpers.user_database_queries as dq
 import mysql.connector
 from datetime import datetime
 
@@ -51,13 +51,11 @@ def signup():
     if not iv.validate_number(role):
         return jsonify({"status": "error", "message": "Invalid role"}), 400
 
-    if dq.check_email_exists(email):
-        return jsonify({"status": "error", "message": "Email address already exists"}), 409
+    # @desc: Check if the user's email exists
+    if not dq.create_user(email, first_name, last_name, username, password, role):
+        return jsonify({"status": "error", "message": "Email already exists"}), 409
 
-    # @desc: inserting new user into database with hashed password
-    dq.insert_user(email, first_name, last_name, username, password, role)
-
-    return jsonify({"status": "success", "message": "User registered successfully"}), 201
+    return jsonify({"status": "success", "message": "User account created successfully"}), 201
 
 
 # @desc User authentication
@@ -127,4 +125,4 @@ def reset_password():
     # @desc: removes the session
     dq.remove_session()
 
-    return jsonify({"status": "success", "message": "Password reset successfully"}), 200
+    return jsonify({"status": "success", "message": "Password reset successfully, Please check your email"}), 200
