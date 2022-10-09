@@ -228,22 +228,27 @@ def authenticated_user():
 
 
 # @desc: Gets the user's role from the database and redirects to the appropriate page
+# @desc: Gets the user's role from the database and redirects to the appropriate page
 def redirect_to():
     cursor = db.cursor(buffered=True)
+
+    # @desc: Get the user's session
     user_id = session.get('user_id')
     cursor.execute(
         "SELECT `role` "
         "FROM `00_user` "
         "WHERE user_id = %s", (user_id,))
+
+    # @desc: Fetch the user's data from the database and close the cursor
     role = cursor.fetchone()
     cursor.close()
 
-    if role[0] == "5":
-        return "/admin/dashboard"
-    elif role[0] == "4":
-        return "/user/dashboard"
-    else:
-        return "/"
+    match role[0]:
+        case "5":
+            return "/admin/dashboard"
+        case "4":
+            return "/user/dashboard"
+    return "/"
 
 
 # @desc: Removes the user's session
@@ -258,27 +263,6 @@ def remove_session():
         return True
     else:
         return False
-
-
-# @desc: Password text generator for the user's password
-def password_generator():
-    import random
-    import string
-
-    # @desc: Password length
-    password_length = 8
-
-    # @desc: Custom special characters for the password
-    special_characters = "@$!%*#?&"
-
-    # @desc: Password characters
-    password_characters = string.ascii_letters + string.digits + special_characters
-
-    # @desc: Generate the password
-    password = ''.join(random.choice(password_characters)
-                       for _ in range(password_length))
-
-    return password
 
 
 # @desc: Resets the user's password by entering the email address and send the new password to the user's email address
@@ -322,40 +306,3 @@ def password_reset(email):
     mail.send(msg)
 
     return True
-
-
-# @desc: Gets the user's role from the database and redirects to the appropriate page
-def redirect_to():
-    cursor = db.cursor(buffered=True)
-
-    # @desc: Get the user's session
-    user_id = session.get('user_id')
-    cursor.execute(
-        "SELECT `role` "
-        "FROM `00_user` "
-        "WHERE user_id = %s", (user_id,))
-
-    # @desc: Fetch the user's data from the database and close the cursor
-    role = cursor.fetchone()
-    cursor.close()
-
-    match role[0]:
-        case "5":
-            return "/admin/dashboard"
-        case "4":
-            return "/user/dashboard"
-    return "/"
-
-
-# @desc: Removes the user's session
-def remove_session():
-    # get the user's session
-    user_id = session.get('user_id')
-
-    # if the user's session exists, remove it
-    if user_id is not None:
-        session.pop('user_id', None)
-        session.clear()
-        return True
-    else:
-        return False
