@@ -1,9 +1,7 @@
+import os
 from datetime import datetime
 
-from itsdangerous import SignatureExpired
-from itsdangerous.url_safe import URLSafeTimedSerializer
-
-from server.config.app import app, bcrypt, mail, db
+from server.config.app import app, bcrypt, mail, db, jws
 from flask import session
 from flask_session import Session
 from flask_mail import Message
@@ -29,6 +27,22 @@ def check_email_exists(email: str):
         return False
 
 
+# @desc: Check if reset password token exists
+def check_password_reset_token_exists(email: str):
+    cursor = db.cursor(buffered=True)
+    cursor.execute(
+        "SELECT `password_reset_token` "
+        "FROM `00_user` "
+        "WHERE email = %s", (email,))
+    is_token = cursor.fetchone()
+    cursor.close()
+
+    if is_token and not is_token[0] is None:
+        return True
+    else:
+        return False
+
+
 # @desc Checks if user id exists
 def check_user_id(user_id: int):
     cursor = db.cursor(buffered=True)
@@ -41,6 +55,27 @@ def check_user_id(user_id: int):
         return True
     else:
         return False
+
+
+# @desc: Password text generator for the user's password
+def password_generator():
+    # @desc: Password length
+    password_length = 15
+
+    # @desc: Custom special characters for the password
+    special_characters = "#?!@$%^&*-"
+
+    # @desc: Password characters
+    password_characters = string.ascii_letters + string.digits + special_characters
+
+    # @desc: Generate the password should be 8 characters long and alphanumeric and special characters
+    passwords = ''.join(random.choices(password_characters, k=password_length))
+
+    # @desc: Check if the password is valid
+    if validate_password(passwords):
+        return passwords
+    else:
+        return password_generator()
 
 
 # @desc: Password hasher checker function
@@ -248,23 +283,28 @@ def remove_session():
         return False
 
 
-# @desc: Sends the user a password reset link via email
 def password_reset_link(email: str):
+    cursor = db.cursor(buffered=True)
+
     # @desc: Check if the email address exists
     if not check_email_exists(email):
         return False
 
-    # @desc: Serializer for the password reset link and the expiration time of the link is 5 minutes
-    password_reset_serializer = URLSafeTimedSerializer(app.secret_key)
+    # @desc: JWS token for the password reset link with the email address as the payload and the secret key as the key
+    password_reset_token = jws.serialize_compact(protected={"alg": "HS256"}, payload=email, key=os.getenv("SECRET_KEY")) \
+        .decode("utf-8")
 
-    # @desc: Generate the password reset link
-    password_reset_url = password_reset_serializer.dumps(
-        email, salt='password-reset-salt')
-    print(password_reset_url)
+    # @desc: Save the password reset link to the database
+    cursor.execute("UPDATE `00_user` "
+                   "SET password_reset_token = %s "
+                   "WHERE email = %s", (password_reset_token, email))
+
+    # @desc: Commit the changes to the database and close the cursor
+    db.commit()
+    cursor.close()
 
     # desc: Send the password reset link to the user's email address
-    msg = Message('Password Reset Link - Matrix Lab',
-                  sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
+    msg = Message('Password Reset Link - Matrix Lab', sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
 
     # @desc: The email's content and format (HTML)
     msg.html = f"""
@@ -273,7 +313,7 @@ def password_reset_link(email: str):
                 <h1>Matrix AI</h1>
                 <p>Hi {email},</p>
                 <p>You have requested to reset your password. Please click the link below to reset your password.</p>
-                <p><a href="{"http://localhost:3000/reset-password/" + password_reset_url}">Reset Password</a></p>
+                <p><a href="{"http://localhost:3000/reset-password/" + password_reset_token}">Reset Password</a></p>
             </body>
         </html>
     """
@@ -285,30 +325,55 @@ def password_reset_link(email: str):
 
 
 # @desc: Checks if the password reset link is valid, and if it is valid, reset the user's password
-def password_reset(password_reset_url: str, password: str):
-    # @desc: Serializer for the password reset link
-    password_reset_serializer = URLSafeTimedSerializer(app.secret_key)
+def password_reset(password_reset_token: str):
 
-    # @desc: Check if the password reset link is valid
-    try:
-        # @desc: Get the user's email address from the password reset link
-        email = password_reset_serializer.loads(
-            password_reset_url, salt='password-reset-salt', max_age=300)
-    except SignatureExpired:
-        return False
+    # @desc: Get the user's email address from the password reset link
+    email = jws.deserialize_compact(password_reset_token, key=os.getenv("SECRET_KEY")).payload.decode("utf-8")
 
     # @desc: Hash the user's password
+    password = password_generator()
     password_hash = password_hasher(password)
 
     cursor = db.cursor(buffered=True)
 
-    # @desc: Update the user's password
-    cursor.execute("UPDATE `00_user` "
-                   "SET password = %s "
-                   "WHERE email = %s", (password_hash, email))
+    # @desc: Check if the token is still in the database, if it is, reset the user's password, if not, return False
+    cursor.execute("SELECT `password_reset_token` "
+                   "FROM `00_user` "
+                   "WHERE email = %s", (email,))
+    token = cursor.fetchone()
 
-    # @desc: Commit the changes to the database and close the cursor
-    db.commit()
-    cursor.close()
+    if token[0] == password_reset_token:
+        # @desc: Update the user's password
+        cursor.execute("UPDATE `00_user` "
+                       "SET `password` = %s, password_reset_token = NULL "
+                       "WHERE email = %s", (password_hash, email))
 
-    return True
+        # @desc: Commit the changes to the database and close the cursor
+        db.commit()
+        cursor.close()
+
+        # @desc: Send the user's new password to the user's email address
+        msg = Message("New Password - Matrix Lab", sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
+
+        # @desc: The email's content and format (HTML)
+        msg.html = f"""
+        <html>
+                <body>
+                    <h1>Matrix AI</h1>
+                    <p>Hi {email},</p>
+                    <p>You have requested to reset your password. Your new password is {password}.</p>
+                </body>
+            </html>
+        """
+
+        # @desc: Send the email
+        mail.send(msg)
+
+        return True
+    else:
+        cursor.execute("UPDATE `00_user` "
+                       "SET password_reset_token = NULL "
+                       "WHERE email = %s", (email,))
+        db.commit()
+        cursor.close()
+        return False

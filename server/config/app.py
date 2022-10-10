@@ -1,8 +1,9 @@
-from flask import Flask, session
+from flask import Flask
 
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
+from authlib.jose import JsonWebSignature
 import os
 import redis
 import mysql.connector
@@ -42,6 +43,9 @@ CORS(app, supports_credentials=True,
 
 # @desc: The bcrypt instance
 bcrypt = Bcrypt(app)
+
+# @desc: The authlib JsonWebSignature instance
+jws = JsonWebSignature()
 
 # @desc: MySQL database connection
 db = mysql.connector.connect(

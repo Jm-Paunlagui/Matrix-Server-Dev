@@ -119,31 +119,22 @@ def forgot_password():
     if not dq.check_email_exists(email):
         return jsonify({"status": "error", "message": "Email address does not exist"}), 404
 
+    if dq.check_password_reset_token_exists(email):
+        return jsonify({"status": "error", "message": "Password reset link already sent"}), 409
+
     # @desc: generates a new password and sends it to the user
     dq.password_reset_link(email)
 
-    return jsonify({"status": "success", "message": "Password reset successfully, Please check your email"}), 200
+    return jsonify({"status": "success", "message": "Password reset link sent successfully, "
+                                                    "Please check your email"}), 200
 
 
 # @desc: Resets the password of the user based on the token sent to the user's email address
 @app.route("/reset-password/<token>", methods=["POST"])
 def reset_password(token: str):
-    if not request.is_json:
-        return jsonify({"status": "error", "message": "Invalid request"})
 
-    password = request.json["password"]
-
-    if not iv.validate_empty_fields(password):
-        return jsonify({"status": "error", "message": "Please fill in all the fields"}), 400
-    if not iv.validate_password(password):
-        return jsonify({"status": "error", "message": "Password must be alphanumeric "
-                                                      "and contain at least one uppercase, one lowercase, "
-                                                      "one number and one special character"}), 400
-
-    if not dq.password_reset(token, password):
+    if not dq.password_reset(token):
         return jsonify({"status": "error", "message": "Token session expired"}), 404
 
-    # @desc: resets the password of the user
-    dq.password_reset(password, token)
-
-    return jsonify({"status": "success", "message": "Password reset successfully"}), 200
+    return jsonify({"status": "success", "message": "Password reset successfully, Please check your email for "
+                                                    "the new password"}), 200
