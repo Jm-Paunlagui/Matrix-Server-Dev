@@ -304,7 +304,8 @@ def password_reset_link(email: str):
     cursor.close()
 
     # desc: Send the password reset link to the user's email address
-    msg = Message('Password Reset Link - Matrix Lab', sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
+    msg = Message('Password Reset Link - Matrix Lab',
+                  sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
 
     # @desc: The email's content and format (HTML)
     msg.html = f"""
@@ -328,7 +329,8 @@ def password_reset_link(email: str):
 def password_reset(password_reset_token: str):
 
     # @desc: Get the user's email address from the password reset link
-    email = jws.deserialize_compact(password_reset_token, key=os.getenv("SECRET_KEY")).payload.decode("utf-8")
+    email = jws.deserialize_compact(
+        password_reset_token, key=os.getenv("SECRET_KEY")).payload.decode("utf-8")
 
     # @desc: Hash the user's password
     password = password_generator()
@@ -353,7 +355,8 @@ def password_reset(password_reset_token: str):
         cursor.close()
 
         # @desc: Send the user's new password to the user's email address
-        msg = Message("New Password - Matrix Lab", sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
+        msg = Message("New Password - Matrix Lab",
+                      sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
 
         # @desc: The email's content and format (HTML)
         msg.html = f"""
