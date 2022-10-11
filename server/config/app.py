@@ -46,9 +46,11 @@ bcrypt = Bcrypt(app)
 
 # @desc: RSA keys for JWT
 private_key = b"-----BEGIN PRIVATE KEY-----\n" + \
-              os.environ.get("MATRIX_RSA_PRIVATE_KEY").encode() + b"\n-----END PRIVATE KEY-----"
+              os.environ.get("MATRIX_RSA_PRIVATE_KEY").encode() + \
+    b"\n-----END PRIVATE KEY-----"
 public_key = b"-----BEGIN PUBLIC KEY-----\n" + \
-             os.environ.get("MATRIX_RSA_PUBLIC_KEY").encode() + b"\n-----END PUBLIC KEY-----"
+             os.environ.get("MATRIX_RSA_PUBLIC_KEY").encode() + \
+    b"\n-----END PUBLIC KEY-----"
 
 # @desc: MySQL database connection
 db = mysql.connector.connect(

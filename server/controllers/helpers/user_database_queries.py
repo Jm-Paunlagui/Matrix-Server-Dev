@@ -284,7 +284,8 @@ def remove_session():
         return False
 
 
-password_reset_serializer = URLSafeTimedSerializer(secret_key=private_key, salt="password-reset-salt")
+password_reset_serializer = URLSafeTimedSerializer(
+    secret_key=private_key, salt="password-reset-salt")
 
 
 def password_reset_link(email: str):
@@ -302,13 +303,17 @@ def password_reset_link(email: str):
     email_name = email_name[0]
 
     # @desc: JWS token for the password reset link with the email address as the payload and the secret key as the key
-    password_reset_token = password_reset_serializer.dumps(email, salt='password-reset-salt')
+    password_reset_token = password_reset_serializer.dumps(
+        email, salt='password-reset-salt')
 
     # @desc: Gets user OS and browser including version
     os_type = user_agent.ParsedUserAgent(request.user_agent.string).platform
-    os_version = user_agent.ParsedUserAgent(request.user_agent.string).os_version
-    browser_type = user_agent.ParsedUserAgent(request.user_agent.string).browser
-    browser_version = user_agent.ParsedUserAgent(request.user_agent.string).version
+    os_version = user_agent.ParsedUserAgent(
+        request.user_agent.string).os_version
+    browser_type = user_agent.ParsedUserAgent(
+        request.user_agent.string).browser
+    browser_version = user_agent.ParsedUserAgent(
+        request.user_agent.string).version
 
     # @desc: Save the password reset link to the database
     cursor.execute("UPDATE `00_user` "
@@ -387,7 +392,8 @@ def password_reset(password_reset_token: str):
     try:
         # @desc: Loads the password reset token and has a max_age that automatically counts down from the time the
         # token is taken from the request
-        email = password_reset_serializer.loads(password_reset_token, salt='password-reset-salt', max_age=86400)
+        email = password_reset_serializer.loads(
+            password_reset_token, salt='password-reset-salt', max_age=86400)
 
         # @desc: Hash the user's password
         password = password_generator()
