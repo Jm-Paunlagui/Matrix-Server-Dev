@@ -6,4 +6,8 @@ flask-mail
 mysql-connector-python
 redis
 tensorflow
-authlib
+pyjwt
+itsdangerous
+pytz
+python-dateutil
+ua-parser
