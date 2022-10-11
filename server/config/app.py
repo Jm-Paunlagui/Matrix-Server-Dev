@@ -3,7 +3,7 @@ from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
-from authlib.jose import JsonWebSignature
+
 import os
 import redis
 import mysql.connector
@@ -44,8 +44,11 @@ CORS(app, supports_credentials=True,
 # @desc: The bcrypt instance
 bcrypt = Bcrypt(app)
 
-# @desc: The authlib JsonWebSignature instance
-jws = JsonWebSignature()
+# @desc: RSA keys for JWT
+private_key = b"-----BEGIN PRIVATE KEY-----\n" + \
+              os.environ.get("MATRIX_RSA_PRIVATE_KEY").encode() + b"\n-----END PRIVATE KEY-----"
+public_key = b"-----BEGIN PUBLIC KEY-----\n" + \
+             os.environ.get("MATRIX_RSA_PUBLIC_KEY").encode() + b"\n-----END PUBLIC KEY-----"
 
 # @desc: MySQL database connection
 db = mysql.connector.connect(
