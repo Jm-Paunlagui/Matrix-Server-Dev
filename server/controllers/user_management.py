@@ -10,7 +10,8 @@ from flask_jwt_extended import create_access_token
 from config.app import app
 
 # @desc MySQL function to get connected and execute queries
-conn = mysql.connector.connect(host="localhost", user="root", password="", database="production_saer")
+conn = mysql.connector.connect(
+    host="localhost", user="root", password="", database="production_saer")
 cursor = conn.cursor()
 
 
@@ -103,20 +104,23 @@ def register():
         password = request.form['password']
         role = request.form['role']
         # Gravatar image url of the user
-        image = 'https://www.gravatar.com/avatar/' + hashlib.md5(email.encode('utf-8')).hexdigest() + '?s=600&d=retro'
+        image = 'https://www.gravatar.com/avatar/' + \
+            hashlib.md5(email.encode('utf-8')).hexdigest() + '?s=600&d=retro'
         # image = request.files['image']
         # save the image to the server and get the path of the image to be saved in the database later
         # image_path = save_image(image)
         now = datetime.now()
 
         # check if one of them exists
-        cursor.execute("SELECT * FROM `00_user` WHERE username = %s OR email = %s", (username, email))
+        cursor.execute(
+            "SELECT * FROM `00_user` WHERE username = %s OR email = %s", (username, email))
         is_exist = cursor.fetchall()
         if is_exist:
             return jsonify({'status': 'error', 'message': 'Username or email already exists'})
         else:
             # validate the user
-            validation = validate_user(email, first_name, last_name, username, password, role)
+            validation = validate_user(
+                email, first_name, last_name, username, password, role)
             # if validation is true, insert the user to the database
             if validation is True:
                 cursor.execute("INSERT INTO `00_user` (`email`, `first_name`, `last_name`, `username`, `password`, "
@@ -133,7 +137,8 @@ def register():
 # Get User Profile
 @app.route('/users-profile/<id_number>', methods=['GET'])
 def user_profile(id_number):
-    cursor.execute("SELECT * FROM `00_user` WHERE `user_id` = %s", (id_number,))
+    cursor.execute(
+        "SELECT * FROM `00_user` WHERE `user_id` = %s", (id_number,))
     user_ = cursor.fetchall()
 
     user_info = []
@@ -158,7 +163,8 @@ def user_profile(id_number):
 # Get user profile by username
 @app.route('/users-profile-username/<username>', methods=['GET'])
 def user_profile_username(username):
-    cursor.execute("SELECT * FROM `00_user` WHERE `username` = %s", (username,))
+    cursor.execute(
+        "SELECT * FROM `00_user` WHERE `username` = %s", (username,))
     user_ = cursor.fetchall()
 
     user_info = []
@@ -178,4 +184,3 @@ def user_profile_username(username):
         return jsonify({'status': 'success', 'message': 'User profile retrieved successfully', 'user': user_info})
     else:
         return jsonify({'status': 'error', 'message': 'User profile not found'})
-
