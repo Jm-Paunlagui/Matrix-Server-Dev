@@ -7,7 +7,7 @@ from flask_session import Session
 from flask_mail import Message
 
 from server.controllers.helpers.input_validation import validate_password
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature, BadData, BadTimeSignature, BadPayload
+from itsdangerous import URLSafeTimedSerializer, BadData
 import random
 import string
 
