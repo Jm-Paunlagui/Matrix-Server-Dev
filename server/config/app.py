@@ -1,12 +1,64 @@
 from flask import Flask
+
+from flask_bcrypt import Bcrypt
 from flask_cors import CORS
+from flask_mail import Mail
+
 import os
+import redis
+import mysql.connector
+
+from keras.models import load_model
 
 # Create the Flask app and load the config file
 app = Flask(__name__)
 
-# Enable CORS for all domains on all routes (for development purposes)
-CORS(app)
+# @desc: The redis configuration
+SESSION_TYPE = "redis"
+SESSION_PERMANENT = False
+SESSION_USE_SIGNER = True
+SESSION_REDIS = redis.from_url("redis://127.0.0.1:6379")
+
+# @desc: Email configuration
+# @TODO: set env variables for email and password
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config["MAIL_USE_SSL"] = True
+app.config["MAIL_USE_TLS"] = False
+app.config["MAIL_PORT"] = 465
+app.config["MAIL_USERNAME"] = os.environ.get("MAIL_USERNAME")
+app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD")
+
+# @desc: The flask mail instance
+mail = Mail(app)
+
+# @desc: Secret key of the application
+app.secret_key = os.environ.get("SECRET_KEY")
+
+# @desc: Config from object
+app.config.from_object(__name__)
+
+# Cross-Origin Resource Sharing configuration for the Flask app to allow requests from the client
+CORS(app, supports_credentials=True,
+     methods="GET,POST,PUT,DELETE,OPTIONS", origins=os.environ.get("DEV_URL"))
+
+# @desc: The bcrypt instance
+bcrypt = Bcrypt(app)
+
+# @desc: RSA keys for JWT
+private_key = b"-----BEGIN PRIVATE KEY-----\n" + \
+              os.environ.get("MATRIX_RSA_PRIVATE_KEY").encode() + \
+    b"\n-----END PRIVATE KEY-----"
+public_key = b"-----BEGIN PUBLIC KEY-----\n" + \
+             os.environ.get("MATRIX_RSA_PUBLIC_KEY").encode() + \
+    b"\n-----END PUBLIC KEY-----"
+
+# @desc: MySQL database connection
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="",
+    database="matrix"
+)
 
 
 # @desc: This is the main route of the application.
