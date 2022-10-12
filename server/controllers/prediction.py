@@ -1,23 +1,20 @@
-from decimal import Decimal
 
 from config.app import app
 import mysql.connector
 from flask import jsonify, request
-from datetime import datetime
-from keras.utils import pad_sequences
 import pickle
-import numpy as np
-import tensorflow as tf
 
 from keras.models import load_model
 
 try:
     # @desc MySQL function to get connected and execute queries
-    connect_to_matrix = mysql.connector.connect(host="localhost", user="root", password="", database="production_saer")
+    connect_to_matrix = mysql.connector.connect(
+        host="localhost", user="root", password="", database="production_saer")
     matrix_cursor = connect_to_matrix.cursor()
     jsonify({'status': 'success', 'message': 'Connected to the database'})
 except Exception as e:
-    jsonify({'status': 'error', 'message': 'Failed to connect to the database' + str(e)})
+    jsonify(
+        {'status': 'error', 'message': 'Failed to connect to the database' + str(e)})
 
 # @desc: Get all the tables and columns from a database
 # @app.route('/tables-columns', methods=['POST'])
@@ -90,12 +87,14 @@ def get_data_from_database():
         course_code = request.json['course_code']  # Required
         input_data_id = request.json['input_data_id']  # Required
 
-        school_year_and_semester = request.json['school_year_and_semester']  # Required
+        # Required
+        school_year_and_semester = request.json['school_year_and_semester']
 
         # Type confirm to confirm the prediction and save it to the database
         type_confirm = request.json['type_confirm']
 
-        matrix_cursor.execute("SELECT `input_source`, `input_data_id` FROM `21_predicted_data`")
+        matrix_cursor.execute(
+            "SELECT `input_source`, `input_data_id` FROM `21_predicted_data`")
         matrix_data = matrix_cursor.fetchall()
 
         if matrix_data:
@@ -104,10 +103,12 @@ def get_data_from_database():
                     return jsonify({'status': 'error', 'message': 'This data has already been analyzed and scored by '
                                                                   'the system.'}), 406  # Not Acceptable
         else:
-            jsonify({'status': 'success', 'message': 'Ready to analyze and score the data.'}), 200
+            jsonify(
+                {'status': 'success', 'message': 'Ready to analyze and score the data.'}), 200
             if type_confirm == input_source:
                 try:
-                    conn = mysql.connector.connect(host=host, user=user, password=password, database=database)
+                    conn = mysql.connector.connect(
+                        host=host, user=user, password=password, database=database)
                     cursor = conn.cursor()
                     cursor.execute("SELECT {}, {}, {}, {}, {} FROM {}".format(input_source, input_data_id, evaluatee,
                                                                               evaluatee_dept, course_code, table))
@@ -122,7 +123,8 @@ def get_data_from_database():
                 except mysql.connector.Error as err:
                     return jsonify({'status': 'error', 'message': 'Connection failed: {}'.format(err)})
             else:
-                return jsonify({'status': 'error', 'message': 'Confirmation failed'}), 406  # Not Acceptable
+                # Not Acceptable
+                return jsonify({'status': 'error', 'message': 'Confirmation failed'}), 406
 
     else:
         return jsonify({'status': 'error', 'message': 'Invalid request'})
