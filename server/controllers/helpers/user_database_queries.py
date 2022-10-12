@@ -414,7 +414,8 @@ def password_reset(password_reset_token: str, password: str):
 
             # desc: Send an email to the user that their password has been reset successfully with a device and browser
             # info
-            msg = Message("Password Reset Successful", sender="service.matrix.ai@gmail.com" , recipients=[email])
+            msg = Message("Password Reset Successful",
+                          sender="service.matrix.ai@gmail.com", recipients=[email])
             msg.html = f""" <!doctype html><html lang="en-US"><head> <meta content="text/html; charset=utf-8" 
             http-equiv="Content-Type"/></head><body marginheight="0" topmargin="0" marginwidth="0" style="margin: 
             0px; background-color: #f2f3f8;" leftmargin="0"> <table cellspacing="0" border="0" cellpadding="0" 
@@ -455,4 +456,3 @@ def password_reset(password_reset_token: str, password: str):
         db.commit()
         cursor.close()
         return False
-
