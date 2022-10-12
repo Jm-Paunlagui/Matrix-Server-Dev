@@ -23,8 +23,7 @@ def test():
     user = cursor.fetchall()
     if user:
         return jsonify({"message": "User found", "user": user}), 200
-    else:
-        return jsonify({"message": "Create a user"}), 200
+    return jsonify({"message": "Create a user"}), 200
 
 
 # Authentication
@@ -45,18 +44,17 @@ def auth():
                                 'token': create_access_token(identity={
                                     'username': username, 'role': is_user[2], 'id_number': is_user[0], 'path': 'admin'
                                 }, expires_delta=timedelta(days=14))})
-            elif is_user[2] == 4:
+            if is_user[2] == 4:
                 return jsonify({'status': 'success', 'message': 'Login successful',
                                 'token': create_access_token(identity={
                                     'username': username, 'role': is_user[2], 'id_number': is_user[0], 'path': 'admin'
                                 }, expires_delta=timedelta(days=14))})
-            elif is_user[2] == 3:
+            if is_user[2] == 3:
                 return jsonify({'status': 'success', 'message': 'Login successful',
                                 'token': create_access_token(identity={
                                     'username': username, 'role': is_user[2], 'id_number': is_user[0],
                                     'path': 'professor'}, expires_delta=timedelta(days=14))})
-            else:
-                return jsonify({'status': 'error', 'message': 'Access denied, Unauthorized user'})
+            return jsonify({'status': 'error', 'message': 'Access denied, Unauthorized user'})
         else:
             return jsonify({'status': 'error', 'message': 'Invalid username or password'})
     else:
@@ -89,8 +87,7 @@ def validate_user(email, first_name, last_name, username, password, role):
     # Check if the role is valid
     if role != '3' and role != '4' and role != '5':
         return jsonify({'status': 'error', 'message': 'Invalid role'})
-    else:
-        return True
+    return True
 
 
 # @jwt_required()
@@ -117,19 +114,17 @@ def register():
         is_exist = cursor.fetchall()
         if is_exist:
             return jsonify({'status': 'error', 'message': 'Username or email already exists'})
-        else:
-            # validate the user
-            validation = validate_user(
-                email, first_name, last_name, username, password, role)
-            # if validation is true, insert the user to the database
-            if validation is True:
-                cursor.execute("INSERT INTO `00_user` (`email`, `first_name`, `last_name`, `username`, `password`, "
-                               "`role`, `gravatar`, `date_created`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                               (email, first_name, last_name, username, password, role, image, now))
-                conn.commit()
-                return jsonify({'status': 'success', 'message': 'User registered successfully'})
-            else:
-                return validation
+        # validate the user
+        validation = validate_user(
+            email, first_name, last_name, username, password, role)
+        # if validation is true, insert the user to the database
+        if validation is True:
+            cursor.execute("INSERT INTO `00_user` (`email`, `first_name`, `last_name`, `username`, `password`, "
+                           "`role`, `gravatar`, `date_created`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                           (email, first_name, last_name, username, password, role, image, now))
+            conn.commit()
+            return jsonify({'status': 'success', 'message': 'User registered successfully'})
+        return validation
     else:
         return jsonify({'status': 'something went wrong'})
 
@@ -156,8 +151,7 @@ def user_profile(id_number):
                 'date_created': _user[8]
             })
         return jsonify({'status': 'success', 'message': 'User profile retrieved successfully', 'user': user_info})
-    else:
-        return jsonify({'status': 'error', 'message': 'User profile not found'})
+    return jsonify({'status': 'error', 'message': 'User profile not found'})
 
 
 # Get user profile by username
@@ -182,5 +176,4 @@ def user_profile_username(username):
                 'date_created': _user[8]
             })
         return jsonify({'status': 'success', 'message': 'User profile retrieved successfully', 'user': user_info})
-    else:
-        return jsonify({'status': 'error', 'message': 'User profile not found'})
+    return jsonify({'status': 'error', 'message': 'User profile not found'})
