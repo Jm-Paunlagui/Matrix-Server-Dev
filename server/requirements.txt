@@ -11,3 +11,4 @@ itsdangerous
 pytz
 python-dateutil
 ua-parser
+python-dotenv
