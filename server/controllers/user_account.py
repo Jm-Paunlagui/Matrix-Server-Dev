@@ -133,7 +133,20 @@ def forgot_password():
 @app.route("/reset-password/<token>", methods=["POST"])
 def reset_password(token: str):
 
-    if not dq.password_reset(token):
+    if not request.is_json:
+        return jsonify({"status": "error", "message": "Invalid request"})
+
+    password = request.json["password"]
+
+    if not iv.validate_empty_fields(password):
+        return jsonify({"status": "error", "message": "Create a new password"}), 400
+
+    if not iv.validate_password(password):
+        return jsonify({"status": "error", "message": "Password must be alphanumeric "
+                                                      "and contain at least one uppercase, one lowercase, "
+                                                      "one number and one special character"}), 400
+
+    if not dq.password_reset(token, password):
         return jsonify({"status": "error", "message": "Token session expired"}), 404
 
     return jsonify({"status": "success", "message": "Password reset successfully, Please check your email for "

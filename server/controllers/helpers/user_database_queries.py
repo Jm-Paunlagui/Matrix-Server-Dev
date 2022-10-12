@@ -288,6 +288,19 @@ password_reset_serializer = URLSafeTimedSerializer(
     secret_key=private_key, salt="password-reset-salt")
 
 
+# @desc: Gets user OS and browser including version
+def get_os_browser_versions():
+    os_type = user_agent.ParsedUserAgent(request.user_agent.string).platform
+    os_version = user_agent.ParsedUserAgent(
+        request.user_agent.string).os_version
+    browser_type = user_agent.ParsedUserAgent(
+        request.user_agent.string).browser
+    browser_version = user_agent.ParsedUserAgent(
+        request.user_agent.string).version
+    dayntime = datetime.now().strftime("%A, %I:%M:%S %p")
+    return os_type, os_version, browser_type, browser_version, dayntime
+
+
 def password_reset_link(email: str):
     cursor = db.cursor(buffered=True)
 
@@ -300,20 +313,16 @@ def password_reset_link(email: str):
                    "FROM `00_user` "
                    "WHERE email = %s", (email,))
     email_name = cursor.fetchone()
+
+    # @desc: First name is used to greet the user
     email_name = email_name[0]
 
     # @desc: JWS token for the password reset link with the email address as the payload and the secret key as the key
     password_reset_token = password_reset_serializer.dumps(
         email, salt='password-reset-salt')
 
-    # @desc: Gets user OS and browser including version
-    os_type = user_agent.ParsedUserAgent(request.user_agent.string).platform
-    os_version = user_agent.ParsedUserAgent(
-        request.user_agent.string).os_version
-    browser_type = user_agent.ParsedUserAgent(
-        request.user_agent.string).browser
-    browser_version = user_agent.ParsedUserAgent(
-        request.user_agent.string).version
+    # desc: Gets the source of the request
+    source = get_os_browser_versions()
 
     # @desc: Save the password reset link to the database
     cursor.execute("UPDATE `00_user` "
@@ -328,57 +337,45 @@ def password_reset_link(email: str):
 
     # desc: Send the password reset link to the user's email address
     msg = Message('Password Reset Link - Matrix Lab',
-                  sender="noreply.service.matrix.ai@gmail.com", recipients=[email])
+                  sender="service.matrix.ai@gmail.com", recipients=[email])
 
     # @desc: The email's content and format (HTML)
-    msg.html = f""" <html xmlns="http://www.w3.org/1999/xhtml"><body 
-    style="background-color:#f2f4f6;width:100%;height:100%;margin:0;-webkit-text-size-adjust:none;font-family
-    :Helvetica,Arial,sans-serif"><span style="display:none!important;visibility:hidden;mso-hide:all;font-size:1px
-    ;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden">Use this link to reset your password. The 
-    link is only valid for 24 hours.</span><table 
-    style="width:100%;margin:0;padding:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0
-    ;background-color:#f2f4f6" role="presentation"><tr><td 
-    style="font-size:16px;margin:auto;word-break:break-word;font-family:Helvetica,Arial,sans-serif"><table 
-    style="width:100%;margin:0;padding:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0" 
-    role="presentation"><tr><td style="font-size:16px;padding:25px 
-    0;text-align:center;word-break:break-word;font-family:Helvetica,Arial,sans-serif"><img 
-    src="https://s.gravatar.com/avatar/e7315fe46c4a8a032656dae5d3952bad?s=80" alt="Paris" 
-    style="display:block;margin-left:auto;margin-right:auto;width:80px"><a href="https://example.com" 
-    class="f-fallback" style="font-size:24px;font-weight:700;color:#a8aaaf;text-decoration:none;text-shadow:0 1px 0 
-    #fff">Matrix Lab</a></td></tr><tr><td style="font-size:16px;font-family:Helvetica,Arial,
-    sans-serif;word-break:break-word;width:100%;margin:0;padding:0;-premailer-width:100%;-premailer-cellpadding:0
-    ;-premailer-cellspacing:0" cellpadding="0" cellspacing="0"><table style="width:570px;margin:0 
-    auto;padding:0;-premailer-width:570px;-premailer-cellpadding:0;-premailer-cellspacing:0;background-color:#fff" 
-    role="presentation"><tr><td style="font-size:16px;padding:45px;word-break:break-word;font-family:Helvetica,Arial,
-    sans-serif"><div class="f-fallback"><h1 style="margin-top:0;color:#333;font-weight:700;text-align:left">Hi {
-    email_name},</h1><p style="color:#878a92;margin:.4em 0 1.1875em;font-size:16px;line-height:1.625">You recently 
-    requested to reset your password for your Matrix account. Use the button below to reset it.<strong>This password 
-    reset is only valid for the next 24 hours.</strong></p><table style="width:100%;margin:30px 
-    auto;padding:0;-premailer-width:100%;-premailer-cellpadding:0;-premailer-cellspacing:0;text-align:center" 
-    role="presentation"><tr><td style="font-size:16px"><table style="width:100%" role="presentation"><tr><td 
-    align="center" style="font-size:16px;word-break:break-word;text-align:center;font-family:Helvetica,Arial,
-    sans-serif"><a href="{"http://localhost:3000/reset-password/" + password_reset_token}" class="f-fallback" 
-    target="_blank" style="background-color:#22bc66;border-top:10px solid #22bc66; width: 100%; border-bottom:10px solid 
-    #22bc66;display:inline-block;color:#fff;text-decoration:none;border-radius:3px;box-shadow:0 2px 3px rgba(0,0,0,
-    .16);-webkit-text-size-adjust:none;box-sizing:border-box">Reset your 
-    password</a></td></tr></table></td></tr></table><p style="margin:.4em 0 
-    1.1875em;font-size:16px;line-height:1.625;color:#878a92">For security, this request was received from a <b>
-    {os_type} {os_version} device using {browser_type} {browser_version}</b>. If you did not request a password reset, 
-    please ignore this email or contact technical support by email:<b><a style="text-decoration:none;color:#878a92" 
-    href="mailto:paunlagui.cs.jm@gmail.com">paunlagui.cs.jm@gmail.com</a></b></p><p style="color:#878a92;margin:.4em 
-    0 1.1875em;font-size:16px;line-height:1.625">Thanks,<br>The Matrix Lab team</p><table 
-    style="margin-top:25px;padding-top:25px;border-top:1px solid #eaeaec" role="presentation"><tr><td 
-    style="font-size:16px"><p style="color:#878a92;margin:.4em 0 1.1875em;font-size:13px;line-height:1.625" 
-    class="f-fallback">If you&backprime;re having trouble with the button above, copy and paste the URL below into 
-    your web browser.</p><p style="color:#878a92;margin:.4em 0 1.1875em;font-size:13px;line-height:1.625" 
-    class="f-fallback">{"http://localhost:3000/reset-password/" + password_reset_token}</p></td></tr></table></div 
-    ></td></tr></table></td></tr><tr><td><table style="width:570px;margin:0 
-    auto;padding:0;-premailer-width:570px;-premailer-cellpadding:0;-premailer-cellspacing :0;text-align:center" 
-    role="presentation"><tr><td style="font-size:16px;padding:45px;word-break:break-word;font-family:Helvetica,Arial, 
-    sans-serif" align="center"><p style="color:#a8aaaf;margin:.4em 0 
-    1.1875em;font-size:13px;line-height:1.625;text-align:center" class="f-fallback">Group 14 - Matrix Lab<br>Blk 01 
-    Lot 18 Lazaro 3 Brgy. 3 Calamba City, Laguna<br>4027 
-    Philippines</p></td></tr></table></td></tr></table></td></tr></table></body></html> """
+    msg.html = f""" <!doctype html><html lang="en-US"><head> <meta content="text/html; charset=utf-8" 
+    http-equiv="Content-Type"/></head><body marginheight="0" topmargin="0" marginwidth="0" style="margin: 0px; 
+    background-color: #f2f3f8;" leftmargin="0"> <table cellspacing="0" border="0" cellpadding="0" width="100%" 
+    bgcolor="#f2f3f8" style="@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400
+    ;500;600;700;800;900&display=swap');font-family: 'Montserrat', sans-serif;"> <tr> <td> <table 
+    style="background-color: #f2f3f8; max-width:670px; margin:0 auto; padding: auto;" width="100%" border="0" 
+    align="center" cellpadding="0" cellspacing="0"> <tr> <td style="height:30px;">&nbsp;</td></tr><tr> <td 
+    style="text-align:center;"> <a href="" title="logo" target="_blank"> <img width="60" 
+    src="https://s.gravatar.com/avatar/e7315fe46c4a8a032656dae5d3952bad?s=80" title="logo" alt="logo"> </a> 
+    </td></tr><tr> <td style="height:20px;">&nbsp;</td></tr><tr> <td> <table width="87%" border="0" align="center" 
+    cellpadding="0" cellspacing="0" style="max-width:670px;background:#fff; border-radius:3px; 
+    text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,
+    .06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);"> <tr> <td style="padding:35px;"> <h1 
+    style="color:#5d6068;font-weight:700;text-align:left">Hi {email_name},</h1> <p style="color:#878a92;margin:.4em 0 
+    2.1875em;font-size:16px;line-height:1.625; text-align: justify;">You recently requested to reset your password 
+    for your Matrix account. Use the button below to reset it. <strong>This password reset is only valid for the next 
+    24 hours.</strong></p><a href="{"http://localhost:3000/reset-password/" + password_reset_token}" 
+    style="background:#22bc66;text-decoration:none !important; font-weight:500; color:#fff;text-transform:uppercase; 
+    font-size:14px;padding:12px 24px;display:block;border-radius:5px;box-shadow:0 2px 3px rgba(0,0,0,.16);">Reset 
+    Password</a> <p style="color:#878a92;margin: 2.1875em 0 .4em;font-size:16px;line-height:1.625; text-align: 
+    justify;">For security, this request was received from a <b>{source[0]} {source[1]}</b> device using <b>
+    {source[2]} {source[3]}</b> on <b>{source[4]}</b>.</p><p style="color:#878a92;margin: .4em 0 
+    2.1875em;font-size:16px;line-height:1.625; text-align: justify;">If you did not request a password reset, 
+    please ignore this email or contact technical support by email: <b> <a 
+    style="text-decoration:none;color:#878a92;" 
+    href="mailto:paunlagui.cs.jm@gmail.com">paunlagui.cs.jm@gmail.com</a></p><p style="color:#878a92;margin:1.1875em 
+    0 .4em;font-size:16px;line-height:1.625;text-align: left;">Thanks, <br>The Matrix Lab team </p><hr 
+    style="margin-top: 12px; margin-bottom: 12px;"> <p style="color:#878a92;margin:.4em 0 
+    1.1875em;font-size:13px;line-height:1.625; text-align: left;">If you&#39;re having trouble with the button above, 
+    copy and paste the URL below into your web browser.</p><p style="color:#878a92;margin:.4em 0 
+    1.1875em;font-size:13px;line-height:1.625; text-align: left;">
+    {"http://localhost:3000/reset-password/" + password_reset_token}</p></td></tr></table> </td><tr> <td 
+    style="height:20px;">&nbsp;</td></tr><tr> <td style="text-align:center;"> <p style="font-size:14px; color:rgba(
+    124, 144, 163, 0.741); line-height:18px; margin:0 0 0;">Group 14 - Matrix Lab <br>Blk 01 Lot 18 Lazaro 3 Brgy. 3 
+    Calamba City, Laguna <br>4027 Philippines</p></td></tr><tr> <td style="height:20px;">&nbsp;</td></tr></table> 
+    </td></tr></table></body></html> """
 
     # @desc: Send the email
     mail.send(msg)
@@ -387,7 +384,7 @@ def password_reset_link(email: str):
 
 
 # @desc: Checks if the password reset link is valid, and if it is valid, reset the user's password
-def password_reset(password_reset_token: str):
+def password_reset(password_reset_token: str, password: str):
     cursor = db.cursor(buffered=True)
     try:
         # @desc: Loads the password reset token and has a max_age that automatically counts down from the time the
@@ -396,27 +393,66 @@ def password_reset(password_reset_token: str):
             password_reset_token, salt='password-reset-salt', max_age=86400)
 
         # @desc: Hash the user's password
-        password = password_generator()
         password_hash = password_hasher(password)
 
         # @desc: Check if the token is still in the database, if it is, reset the user's password, if not, return False
-        cursor.execute("SELECT `password_reset_token` "
+        cursor.execute("SELECT `password_reset_token`, `first_name` "
                        "FROM `00_user` "
                        "WHERE email = %s", (email,))
         token = cursor.fetchone()
-
+        # @desc: First name is used to greet the user
+        email_name = token[1]
         if token[0] == password_reset_token:
             cursor.execute("UPDATE `00_user` "
                            "SET password = %s, password_reset_token = NULL "
                            "WHERE email = %s", (password_hash, email))
             db.commit()
             cursor.close()
+
+            # desc: Gets the source of the request
+            source = get_os_browser_versions()
+
+            # desc: Send an email to the user that their password has been reset successfully with a device and browser
+            # info
+            msg = Message("Password Reset Successful", sender="service.matrix.ai@gmail.com" , recipients=[email])
+            msg.html = f""" <!doctype html><html lang="en-US"><head> <meta content="text/html; charset=utf-8" 
+            http-equiv="Content-Type"/></head><body marginheight="0" topmargin="0" marginwidth="0" style="margin: 
+            0px; background-color: #f2f3f8;" leftmargin="0"> <table cellspacing="0" border="0" cellpadding="0" 
+            width="100%" bgcolor="#f2f3f8" style="@import url(
+            'https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display
+            =swap');font-family: 'Montserrat', sans-serif;"> <tr> <td> <table style="background-color: #f2f3f8; 
+            max-width:670px; margin:0 auto; padding: auto;" width="100%" border="0" align="center" cellpadding="0" 
+            cellspacing="0"> <tr> <td style="height:30px;">&nbsp;</td></tr><tr> <td style="text-align:center;"> <a 
+            href="https://rakeshmandal.com" title="logo" target="_blank"> <img width="60" 
+            src="https://s.gravatar.com/avatar/e7315fe46c4a8a032656dae5d3952bad?s=80" title="logo" alt="logo"> </a> 
+            </td></tr><tr> <td style="height:20px;">&nbsp;</td></tr><tr> <td> <table width="87%" border="0" 
+            align="center" cellpadding="0" cellspacing="0" style="max-width:670px;background:#fff; border-radius:3px; 
+            text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,
+            0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);"> <tr> <td style="padding:35px;"> <h1 
+            style="color:#5d6068;font-weight:700;text-align:left">Hi {email_name},</h1> <p 
+            style="color:#878a92;margin:.4em 0 2.1875em;font-size:16px;line-height:1.625; text-align: justify;">Your 
+            password has been changed successfully.</p><p style="color:#878a92;margin: 2.1875em 0 
+            .4em;font-size:16px;line-height:1.625; text-align: justify;">For security, this request was received from 
+            a <b>{source[0]} {source[1]}</b> device using <b>{source[2]} {source[3]}</b> on <b>{source[4]}</b>.</p><p 
+            style="color:#878a92;margin: .4em 0 2.1875em;font-size:16px;line-height:1.625; text-align: justify;">If 
+            you did not change your password on this time period, please contact us immediately by email: <b><a 
+            style="text-decoration:none;color:#878a92;" 
+            href="mailto:paunlagui.cs.jm@gmail.com">paunlagui.cs.jm@gmail.com</a></b>.</p><p 
+            style="color:#878a92;margin:1.1875em 0 .4em;font-size:16px;line-height:1.625;text-align: left;">Thanks, 
+            <br>The Matrix Lab team. </p></td></tr></table> </td><tr> <td style="height:20px;">&nbsp;</td></tr><tr> 
+            <td style="text-align:center;"> <p style="font-size:14px; color:rgba(124, 144, 163, 
+            0.741); line-height:18px; margin:0 0 0;">Group 14 - Matrix Lab <br>Blk 01 Lot 18 Lazaro 3 Brgy. 3 Calamba 
+            City, Laguna <br>4027 Philippines</p></td></tr><tr> <td style="height:20px;">&nbsp;</td></tr></table> 
+            </td></tr></table></body></html> """
+
+            mail.send(msg)
             return True
-    except BadData or BadSignature or BadTimeSignature or SignatureExpired or BadPayload:
-        # @desc: If the password reset link has expired, remove the token from the database
+    except BadData:
+        # @desc: If the password reset link has expired, tampers with the link, or the link is invalid, return False
         cursor.execute("UPDATE `00_user` "
                        "SET password_reset_token = NULL "
                        "WHERE password_reset_token = %s", (password_reset_token,))
         db.commit()
         cursor.close()
         return False
+
