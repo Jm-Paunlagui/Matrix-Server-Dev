@@ -85,7 +85,7 @@ def validate_user(email, first_name, last_name, username, password, role):
     if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,20}$", password):
         return jsonify({'status': 'error', 'message': 'Password must be alphanumeric'})
     # Check if the role is valid
-    if role != '3' and role != '4' and role != '5':
+    if role not in ('3', '4', '5'):
         return jsonify({'status': 'error', 'message': 'Invalid role'})
     return True
 
