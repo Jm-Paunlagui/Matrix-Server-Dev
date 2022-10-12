@@ -55,8 +55,7 @@ def auth():
                                     'username': username, 'role': is_user[2], 'id_number': is_user[0],
                                     'path': 'professor'}, expires_delta=timedelta(days=14))})
             return jsonify({'status': 'error', 'message': 'Access denied, Unauthorized user'})
-        else:
-            return jsonify({'status': 'error', 'message': 'Invalid username or password'})
+        return jsonify({'status': 'error', 'message': 'Invalid username or password'})
     else:
         return jsonify({'status': 'error', 'message': 'Invalid request'})
 
@@ -125,8 +124,7 @@ def register():
             conn.commit()
             return jsonify({'status': 'success', 'message': 'User registered successfully'})
         return validation
-    else:
-        return jsonify({'status': 'something went wrong'})
+    return jsonify({'status': 'something went wrong'})
 
 
 # Get User Profile
