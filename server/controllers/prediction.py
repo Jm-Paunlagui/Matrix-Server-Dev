@@ -1,13 +1,8 @@
-from decimal import Decimal
 
 from config.app import app
 import mysql.connector
 from flask import jsonify, request
-from datetime import datetime
-from keras.utils import pad_sequences
 import pickle
-import numpy as np
-import tensorflow as tf
 
 from keras.models import load_model
 

@@ -1,9 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
 import os
-import pickle
-
-from keras.models import load_model
 
 # Create the Flask app and load the config file
 app = Flask(__name__)
