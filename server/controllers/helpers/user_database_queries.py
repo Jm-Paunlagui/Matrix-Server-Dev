@@ -73,7 +73,8 @@ def check_email_exists_by_username(username: str):
 
     if is_email[1] == username:
         # Hide some of the text in the email address for security purposes and return the email address
-        email = is_email[0][:2] + "*****" + is_email[0][is_email[0].index("@"):]
+        email = is_email[0][:2] + "*****" + \
+            is_email[0][is_email[0].index("@"):]
         return email
 
 
@@ -410,7 +411,8 @@ def password_reset(password_reset_token: str, password: str):
     cursor = db.cursor(buffered=True)
     try:
         # @desc: Get the user's email address from the password reset link
-        email: dict = jwt.decode(password_reset_token, public_key, algorithms=["RS256"], verify=True)
+        email: dict = jwt.decode(password_reset_token, public_key, algorithms=[
+                                 "RS256"], verify=True)
 
         # @desc: Hash the user's password
         password_hash = password_hasher(password)

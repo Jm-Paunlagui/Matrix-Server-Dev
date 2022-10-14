@@ -80,4 +80,3 @@ def run():
 # @desc: The add_url_rule() method is used to add a new rule to the list of URL rules.
 def add_url_rule(param, view_func, methods):
     return app.add_url_rule(param, view_func=view_func, methods=methods)
-
