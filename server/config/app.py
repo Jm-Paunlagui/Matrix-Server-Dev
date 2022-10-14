@@ -2,7 +2,6 @@ from datetime import datetime
 
 from flask import Flask
 
-from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_mail import Mail
 
@@ -32,8 +31,6 @@ app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD")
 app.secret_key = os.environ.get("SECRET_KEY")
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
-# @desc: The bcrypt instance
-bcrypt = Bcrypt(app)
 
 # Cross-Origin Resource Sharing configuration for the Flask app to allow requests from the client
 CORS(app, supports_credentials=True,

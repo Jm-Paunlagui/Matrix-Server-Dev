@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from server.config.app import app
-import server.controllers.helpers.input_validation as iv
-import server.controllers.helpers.user_database_queries as dq
+import server.controllers.modules.input_validation as iv
+import server.controllers.modules.user_database_queries as dq
 import mysql.connector
 from datetime import datetime
 
