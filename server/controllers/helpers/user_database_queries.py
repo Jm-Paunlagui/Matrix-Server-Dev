@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import datetime, timezone, timedelta
 from server.controllers.helpers import user_agent
 from server.config.app import app, bcrypt, mail, db, private_key, public_key, timezone_current_time
@@ -333,9 +334,13 @@ def password_reset_link(email: str):
 
     # payload for the password reset link and the expiration time of the link is 5 minutes and timestamp is in
     # seconds and timezones are in Local Time
-    payload = {"sub": email,
-               "iat": datetime.timestamp(timezone_current_time),
-               "exp": datetime.timestamp(timezone_current_time + timedelta(hours=24))}
+    payload = {
+        "iss": "http://127.0.0.1:5000",
+        "sub": email,
+        "iat": datetime.timestamp(timezone_current_time),
+        "exp": datetime.timestamp(timezone_current_time + timedelta(hours=24)),
+        "jti": str(uuid.uuid4())
+    }
 
     # @desc: Generate the password reset link
     password_reset_token = jwt.encode(payload, private_key, algorithm="RS256")
