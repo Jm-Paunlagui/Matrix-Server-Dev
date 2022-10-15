@@ -3,9 +3,8 @@ import hashlib
 
 import mysql.connector
 
-from datetime import timedelta, datetime
+from datetime import timedelta
 from flask import jsonify, request
-from flask_jwt_extended import jwt_required, create_access_token
 from server.config.configurations import app
 
 # @desc MySQL function to get connected and execute queries

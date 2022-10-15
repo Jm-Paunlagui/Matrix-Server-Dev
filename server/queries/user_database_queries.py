@@ -8,7 +8,6 @@ from flask_session import Session
 from flask_mail import Message
 
 import jwt
-
 server_session = Session(app)
 
 
@@ -22,8 +21,7 @@ def check_email_exists(email: str):
     cursor.close()
     if is_email:
         return True
-    else:
-        return False
+    return False
 
 
 # @desc: Check if reset password token exists
@@ -35,11 +33,9 @@ def check_password_reset_token_exists(email: str):
         "WHERE email = %s", (email,))
     is_token = cursor.fetchone()
     cursor.close()
-
     if is_token and not is_token[0] is None:
         return True
-    else:
-        return False
+    return False
 
 
 # @desc Checks if user id exists
@@ -52,8 +48,7 @@ def check_user_id(user_id: int):
     cursor.close()
     if is_id:
         return True
-    else:
-        return False
+    return False
 
 
 # @desc: Check email if it exists by username
@@ -64,10 +59,8 @@ def check_email_exists_by_username(username: str):
                    "WHERE username = %s", (username,))
     is_email = cursor.fetchone()
     cursor.close()
-
     if is_email is None:
         return False
-
     if is_email[1] == username:
         # Hide some of the text in the email address for security purposes and return the email address
         email = is_email[0][:2] + "*****" + \
@@ -84,14 +77,11 @@ def timestamps():
 # @desc: Creates a new user account
 def create_user(email: str, first_name: str, last_name: str, username: str, password: str, role: int):
     cursor = db.cursor(buffered=True)
-
     # @desc: Check if the user's email exists
     if check_email_exists(email):
         return False
-
     # @desc: Hash the user's password before storing it in the database
     hashed_password = password_hasher(password)
-
     # @desc: Insert the user's data into the database
     cursor.execute("INSERT INTO `00_user` (`email`, `first_name`, `last_name`, "
                    "`username`, `password`, `role`, `date_created`) "
@@ -101,46 +91,37 @@ def create_user(email: str, first_name: str, last_name: str, username: str, pass
     # @desc: Commit the changes to the database and close the cursor
     db.commit()
     cursor.close()
-
     return True
 
 
 # @desc: Flags delete the user's account based on the user's id
 def delete_user(user_id: int):
     cursor = db.cursor(buffered=True)
-
     # @desc: Check if the user's id exists
     if not check_user_id(user_id):
         return False
-
     # @desc: Delete the user's account by setting the user's flag_deleted to 1
     cursor.execute("UPDATE `00_user` "
                    "SET flag_deleted = 1 "
                    "WHERE user_id = %s", (user_id,))
-
     # @desc: Commit the changes to the database and close the cursor
     db.commit()
     cursor.close()
-
     return True
 
 
 # @desc: Permanently deletes the user's account based on the user's id
 def delete_user_permanently(user_id: int):
     cursor = db.cursor(buffered=True)
-
     # @desc: Check if the user's id exists
     if not check_user_id(user_id):
         return False
-
     # @desc: Delete the user's account by setting the user's flag_deleted to 1
     cursor.execute("DELETE FROM `00_user` "
                    "WHERE user_id = %s", (user_id,))
-
     # @desc: Commit the changes to the database and close the cursor
     db.commit()
     cursor.close()
-
     return True
 
 
@@ -152,79 +133,62 @@ def read_flagged_deleted_users():
                    "WHERE flag_deleted = 1")
     users = cursor.fetchall()
     cursor.close()
-
     if users:
         return users
-    else:
-        return False
+    return False
 
 
 # @desc: Restores the user's account based on the user's id
 def restore_user(user_id: int):
     cursor = db.cursor(buffered=True)
-
     # @desc: Check if the user's id exists
     if not check_user_id(user_id):
         return False
-
     # @desc: Restore the user's account by setting the user's flag_deleted to 0
     cursor.execute("UPDATE `00_user` "
                    "SET flag_deleted = 0 "
                    "WHERE user_id = %s", (user_id,))
-
     # @desc: Commit the changes to the database and close the cursor
     db.commit()
     cursor.close()
-
     return True
 
 
 # @desc: For user authentication
 def authenticate_user(username: str, password: str):
     cursor = db.cursor(buffered=True)
-
     cursor.execute(
         "SELECT `user_id`,`username`, `password` "
         "FROM `00_user` "
         "WHERE username = %s", (username,))
     user = cursor.fetchone()
     cursor.close()
-
     # @desc: Check if the user exists
     if user is None:
         return False
-
     # @desc: Check if the user's password is correct
     if not password_hash_check(user[2], password) or user[1] != username:
         return False
-
-    #
     session['user_id'] = user[0]
-
     return True
 
 
 # @desc: Gets the user's id
 def authenticated_user():
     cursor = db.cursor(buffered=True)
-
     # @desc: Get the user's session
     user_id = session.get('user_id')
-
     # @desc: Check if the user's session exists
     if user_id is None:
         return False
-
     # @desc: Get the user's data
     cursor.execute(
         "SELECT `user_id`, `email`, `first_name`, `last_name`, `username`, `password` "
         "FROM `00_user` "
         "WHERE user_id = %s", (user_id,))
-
     # @desc: Fetch the user's data from the database and close the cursor
     user = cursor.fetchone()
     cursor.close()
-
     return user
 
 
@@ -232,18 +196,15 @@ def authenticated_user():
 # @desc: Gets the user's role from the database and redirects to the appropriate page
 def redirect_to():
     cursor = db.cursor(buffered=True)
-
     # @desc: Get the user's session
     user_id = session.get('user_id')
     cursor.execute(
         "SELECT `role` "
         "FROM `00_user` "
         "WHERE user_id = %s", (user_id,))
-
     # @desc: Fetch the user's data from the database and close the cursor
     role = cursor.fetchone()
     cursor.close()
-
     match role[0]:
         case "5":
             return "/admin/dashboard"
@@ -256,14 +217,12 @@ def redirect_to():
 def remove_session():
     # get the user's session
     user_id = session.get('user_id')
-
     # if the user's session exists, remove it
     if user_id is not None:
         session.pop('user_id', None)
         session.clear()
         return True
-    else:
-        return False
+    return False
 
 
 # @desc: Gets user OS and browser including version
@@ -281,20 +240,16 @@ def get_os_browser_versions():
 
 def password_reset_link(email: str):
     cursor = db.cursor(buffered=True)
-
     # @desc: Check if the email address exists
     if not check_email_exists(email):
         return False
-
     # @desc: Get email name
     cursor.execute("SELECT `first_name` "
                    "FROM `00_user` "
                    "WHERE email = %s", (email,))
     email_name = cursor.fetchone()
-
     # @desc: First name is used to greet the user
     email_name = email_name[0]
-
     # payload for the password reset link and the expiration time of the link is 5 minutes and timestamp is in
     # seconds and timezones are in Local Time
     payload = {
@@ -304,26 +259,20 @@ def password_reset_link(email: str):
         "exp": datetime.timestamp(timezone_current_time + timedelta(hours=24)),
         "jti": str(uuid.uuid4())
     }
-
     # @desc: Generate the password reset link
     password_reset_token = jwt.encode(payload, private_key, algorithm="RS256")
-
     # desc: Gets the source of the request
     source = get_os_browser_versions()
-
     # @desc: Save the password reset link to the database
     cursor.execute("UPDATE `00_user` "
                    "SET password_reset_token = %s "
                    "WHERE email = %s", (password_reset_token, email))
-
     # @desc: Commit the changes to the database and close the cursor
     db.commit()
     cursor.close()
-
     # desc: Send the password reset link to the user's email address
     msg = Message('Password Reset Link - Matrix Lab',
                   sender="service.matrix.ai@gmail.com", recipients=[email])
-
     # @desc: The email's content and format (HTML)
     msg.html = f""" <!doctype html><html lang="en-US"><head> <meta content="text/html; charset=utf-8" 
     http-equiv="Content-Type"/></head><body marginheight="0" topmargin="0" marginwidth="0" style="margin: 0px; 
@@ -361,10 +310,8 @@ def password_reset_link(email: str):
     124, 144, 163, 0.741); line-height:18px; margin:0 0 0;">Group 14 - Matrix Lab <br>Blk 01 Lot 18 Lazaro 3 Brgy. 3 
     Calamba City, Laguna <br>4027 Philippines</p></td></tr><tr> <td style="height:20px;">&nbsp;</td></tr></table> 
     </td></tr></table></body></html> """
-
     # @desc: Send the email
     mail.send(msg)
-
     return True
 
 
@@ -375,10 +322,8 @@ def password_reset(password_reset_token: str, password: str):
         # @desc: Get the user's email address from the password reset link
         email: dict = jwt.decode(password_reset_token, public_key, algorithms=[
                                  "RS256"], verify=True)
-
         # @desc: Hash the user's password
         password_hash = password_hasher(password)
-
         # @desc: Check if the token is still in the database, if it is, reset the user's password, if not, return False
         cursor.execute("SELECT `password_reset_token`, `first_name` "
                        "FROM `00_user` "
@@ -392,10 +337,8 @@ def password_reset(password_reset_token: str, password: str):
                            "WHERE email = %s", (password_hash, email["sub"],))
             db.commit()
             cursor.close()
-
             # desc: Gets the source of the request
             source = get_os_browser_versions()
-
             # desc: Send an email to the user that their password has been reset successfully with a device and browser
             # info
             msg = Message("Password Reset Successful",
@@ -429,7 +372,6 @@ def password_reset(password_reset_token: str, password: str):
             0.741); line-height:18px; margin:0 0 0;">Group 14 - Matrix Lab <br>Blk 01 Lot 18 Lazaro 3 Brgy. 3 Calamba 
             City, Laguna <br>4027 Philippines</p></td></tr><tr> <td style="height:20px;">&nbsp;</td></tr></table> 
             </td></tr></table></body></html> """
-
             mail.send(msg)
             return True
     except jwt.exceptions.InvalidTokenError:
