@@ -2,7 +2,7 @@
 import string
 import random
 from flask_bcrypt import Bcrypt
-from server.config.app import app
+from server.config.configurations import app
 from server.modules.input_validation import validate_password
 
 bcrypt = Bcrypt(app)

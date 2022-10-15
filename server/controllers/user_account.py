@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from server.config.app import app
+from server.config.configurations import app
 import server.modules.input_validation as iv
 import server.queries.user_database_queries as dq
 import mysql.connector

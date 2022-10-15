@@ -6,7 +6,7 @@ import mysql.connector
 from datetime import timedelta, datetime
 from flask import jsonify, request
 from flask_jwt_extended import jwt_required, create_access_token
-from server.config.app import app
+from server.config.configurations import app
 
 # @desc MySQL function to get connected and execute queries
 conn = mysql.connector.connect(

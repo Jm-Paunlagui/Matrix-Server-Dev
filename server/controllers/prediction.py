@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from server.config.app import app
+from server.config.configurations import app
 import mysql.connector
 from flask import jsonify, request
 from datetime import datetime
