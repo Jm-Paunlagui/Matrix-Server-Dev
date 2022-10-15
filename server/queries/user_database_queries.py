@@ -1,17 +1,12 @@
-import os
 import uuid
-from datetime import datetime, timezone, timedelta
-from server.controllers.modules import user_agent
-from server.controllers.modules.password_bcrypt import password_hasher, password_hash_check
+from datetime import datetime, timedelta
+from server.modules import user_agent
+from server.modules.password_bcrypt import password_hasher, password_hash_check
 from server.config.app import app, mail, db, private_key, public_key, timezone_current_time
 from flask import session, request
 from flask_session import Session
 from flask_mail import Message
 
-
-from server.controllers.modules.input_validation import validate_password
-import random
-import string
 import jwt
 
 server_session = Session(app)

@@ -1,18 +1,9 @@
 from flask import jsonify, request
 from server.config.app import app
-import server.controllers.modules.input_validation as iv
-import server.controllers.modules.user_database_queries as dq
+import server.modules.input_validation as iv
+import server.queries.user_database_queries as dq
 import mysql.connector
 from datetime import datetime
-
-# @desc: Connection to the database
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="matrix"
-)
-cursor = db.cursor(buffered=True)
 
 
 # @desc: Timestamps
