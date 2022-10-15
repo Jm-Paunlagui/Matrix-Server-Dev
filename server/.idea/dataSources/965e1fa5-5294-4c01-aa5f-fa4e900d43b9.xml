@@ -1168,394 +1168,341 @@ test\\_%|schema||&apos;&apos;||UPDATE|G</Grants>
     <schema id="332" parent="1" name="test">
       <CollationName>latin1_swedish_ci</CollationName>
     </schema>
-    <schema id="333" parent="1" name="dummy_eval">
-      <CollationName>utf8mb4_general_ci</CollationName>
-    </schema>
-    <user id="334" parent="1" name="root">
+    <user id="333" parent="1" name="root">
       <Host>localhost</Host>
     </user>
-    <user id="335" parent="1" name="root">
+    <user id="334" parent="1" name="root">
       <Host>127.0.0.1</Host>
     </user>
-    <user id="336" parent="1" name="root">
+    <user id="335" parent="1" name="root">
       <Host>::1</Host>
     </user>
-    <user id="337" parent="1" name="pma">
+    <user id="336" parent="1" name="pma">
       <Host>localhost</Host>
     </user>
-    <table id="338" parent="329" name="00_role">
+    <table id="337" parent="329" name="00_role">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_general_ci</CollationName>
     </table>
-    <table id="339" parent="329" name="00_user">
+    <table id="338" parent="329" name="00_user">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_general_ci</CollationName>
     </table>
-    <table id="340" parent="329" name="01_professor_performance">
+    <table id="339" parent="329" name="01_professor_performance">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_general_ci</CollationName>
     </table>
-    <table id="341" parent="329" name="11_department">
+    <table id="340" parent="329" name="11_department">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_general_ci</CollationName>
     </table>
-    <table id="342" parent="329" name="12_school_year">
+    <table id="341" parent="329" name="12_school_year">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_general_ci</CollationName>
     </table>
-    <table id="343" parent="329" name="13_semester">
+    <table id="342" parent="329" name="13_semester">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_general_ci</CollationName>
     </table>
-    <table id="344" parent="329" name="21_predicted_data">
+    <table id="343" parent="329" name="21_predicted_data">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_general_ci</CollationName>
     </table>
-    <table id="345" parent="333" name="mytable">
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_general_ci</CollationName>
-    </table>
-    <column id="346" parent="338" name="id_number">
+    <column id="344" parent="337" name="id_number">
       <AutoIncrement>1</AutoIncrement>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="347" parent="338" name="role_name">
+    <column id="345" parent="337" name="role_name">
       <DataType>varchar(16)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="348" parent="338" name="date_created">
+    <column id="346" parent="337" name="date_created">
       <DataType>timestamp|0s</DataType>
       <Position>3</Position>
     </column>
-    <column id="349" parent="338" name="date_modified">
+    <column id="347" parent="337" name="date_modified">
       <DataType>timestamp|0s</DataType>
       <Position>4</Position>
     </column>
-    <index id="350" parent="338" name="PRIMARY">
+    <index id="348" parent="337" name="PRIMARY">
       <ColNames>id_number</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="351" parent="338" name="PRIMARY">
+    <key id="349" parent="337" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="352" parent="339" name="user_id">
+    <column id="350" parent="338" name="user_id">
       <AutoIncrement>21</AutoIncrement>
       <DataType>bigint(20)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="353" parent="339" name="email">
+    <column id="351" parent="338" name="email">
       <DataType>varchar(32)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="354" parent="339" name="first_name">
+    <column id="352" parent="338" name="first_name">
       <DataType>varchar(32)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="355" parent="339" name="last_name">
+    <column id="353" parent="338" name="last_name">
       <DataType>varchar(32)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>4</Position>
     </column>
-    <column id="356" parent="339" name="username">
+    <column id="354" parent="338" name="username">
       <DataType>varchar(16)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>5</Position>
     </column>
-    <column id="357" parent="339" name="password">
+    <column id="355" parent="338" name="password">
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>6</Position>
     </column>
-    <column id="358" parent="339" name="role">
+    <column id="356" parent="338" name="role">
       <DataType>varchar(16)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>7</Position>
     </column>
-    <column id="359" parent="339" name="gravatar">
+    <column id="357" parent="338" name="gravatar">
       <DataType>tinytext|0s</DataType>
       <NotNull>1</NotNull>
       <Position>8</Position>
     </column>
-    <column id="360" parent="339" name="date_created">
+    <column id="358" parent="338" name="date_created">
       <DataType>timestamp|0s</DataType>
       <Position>9</Position>
     </column>
-    <column id="361" parent="339" name="date_modified">
+    <column id="359" parent="338" name="date_modified">
       <DataType>timestamp|0s</DataType>
       <Position>10</Position>
     </column>
-    <column id="362" parent="339" name="date_change_at">
+    <column id="360" parent="338" name="date_change_at">
       <DataType>timestamp|0s</DataType>
       <Position>11</Position>
     </column>
-    <index id="363" parent="339" name="PRIMARY">
+    <index id="361" parent="338" name="PRIMARY">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="364" parent="339" name="PRIMARY">
+    <key id="362" parent="338" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="365" parent="340" name="id_number">
+    <column id="363" parent="339" name="id_number">
       <DataType>bigint(20)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="366" parent="340" name="user_id">
+    <column id="364" parent="339" name="user_id">
       <DataType>bigint(20)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="367" parent="340" name="name_hidden">
+    <column id="365" parent="339" name="name_hidden">
       <DataType>varchar(32)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="368" parent="340" name="department">
+    <column id="366" parent="339" name="department">
       <DataType>varchar(128)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>4</Position>
     </column>
-    <column id="369" parent="340" name="overall_positive_score">
+    <column id="367" parent="339" name="overall_positive_score">
       <DataType>varchar(8)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>5</Position>
     </column>
-    <column id="370" parent="340" name="overall_negative_score">
+    <column id="368" parent="339" name="overall_negative_score">
       <DataType>varchar(8)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>6</Position>
     </column>
-    <column id="371" parent="340" name="date_pre_evaluation">
+    <column id="369" parent="339" name="date_pre_evaluation">
       <DataType>timestamp|0s</DataType>
       <Position>7</Position>
     </column>
-    <column id="372" parent="340" name="date_post_evaluated">
+    <column id="370" parent="339" name="date_post_evaluated">
       <DataType>timestamp|0s</DataType>
       <Position>8</Position>
     </column>
-    <column id="373" parent="340" name="school_year">
+    <column id="371" parent="339" name="school_year">
       <DataType>varchar(32)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>9</Position>
     </column>
-    <column id="374" parent="340" name="semester">
+    <column id="372" parent="339" name="semester">
       <DataType>varchar(32)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>10</Position>
     </column>
-    <index id="375" parent="340" name="PRIMARY">
+    <index id="373" parent="339" name="PRIMARY">
       <ColNames>id_number</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="376" parent="340" name="PRIMARY">
+    <key id="374" parent="339" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="377" parent="341" name="id_number">
+    <column id="375" parent="340" name="id_number">
       <AutoIncrement>1</AutoIncrement>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="378" parent="341" name="department_name">
+    <column id="376" parent="340" name="department_name">
       <DataType>varchar(128)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="379" parent="341" name="date_created">
+    <column id="377" parent="340" name="date_created">
       <DataType>timestamp|0s</DataType>
       <Position>3</Position>
     </column>
-    <column id="380" parent="341" name="date_modified">
+    <column id="378" parent="340" name="date_modified">
       <DataType>timestamp|0s</DataType>
       <Position>4</Position>
     </column>
-    <index id="381" parent="341" name="PRIMARY">
+    <index id="379" parent="340" name="PRIMARY">
       <ColNames>id_number</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="382" parent="341" name="PRIMARY">
+    <key id="380" parent="340" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="383" parent="342" name="id_number">
+    <column id="381" parent="341" name="id_number">
       <AutoIncrement>1</AutoIncrement>
       <DataType>bigint(20)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="384" parent="342" name="school_year">
+    <column id="382" parent="341" name="school_year">
       <DataType>varchar(16)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="385" parent="342" name="date_created">
+    <column id="383" parent="341" name="date_created">
       <DataType>timestamp|0s</DataType>
       <Position>3</Position>
     </column>
-    <column id="386" parent="342" name="date_modified">
+    <column id="384" parent="341" name="date_modified">
       <DataType>timestamp|0s</DataType>
       <Position>4</Position>
     </column>
-    <index id="387" parent="342" name="PRIMARY">
+    <index id="385" parent="341" name="PRIMARY">
       <ColNames>id_number</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="388" parent="342" name="PRIMARY">
+    <key id="386" parent="341" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="389" parent="343" name="id_number">
+    <column id="387" parent="342" name="id_number">
       <AutoIncrement>1</AutoIncrement>
       <DataType>bigint(20)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="390" parent="343" name="semester">
+    <column id="388" parent="342" name="semester">
       <DataType>varchar(16)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="391" parent="343" name="date_created">
+    <column id="389" parent="342" name="date_created">
       <DataType>timestamp|0s</DataType>
       <Position>3</Position>
     </column>
-    <column id="392" parent="343" name="date_modified">
+    <column id="390" parent="342" name="date_modified">
       <DataType>timestamp|0s</DataType>
       <Position>4</Position>
     </column>
-    <index id="393" parent="343" name="PRIMARY">
+    <index id="391" parent="342" name="PRIMARY">
       <ColNames>id_number</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="394" parent="343" name="PRIMARY">
+    <key id="392" parent="342" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="395" parent="344" name="predicted_data_id">
-      <AutoIncrement>366946</AutoIncrement>
+    <column id="393" parent="343" name="predicted_data_id">
+      <AutoIncrement>88247</AutoIncrement>
       <DataType>int(255)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="396" parent="344" name="input_source">
+    <column id="394" parent="343" name="input_source">
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="397" parent="344" name="evaluatee">
+    <column id="395" parent="343" name="evaluatee">
       <DataType>varchar(100)|0s</DataType>
       <Position>3</Position>
     </column>
-    <column id="398" parent="344" name="evaluatee_dept">
+    <column id="396" parent="343" name="evaluatee_dept">
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>4</Position>
     </column>
-    <column id="399" parent="344" name="course_code">
+    <column id="397" parent="343" name="course_code">
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>5</Position>
     </column>
-    <column id="400" parent="344" name="input_data_id">
+    <column id="398" parent="343" name="input_data_id">
       <DataType>bigint(20)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>6</Position>
     </column>
-    <column id="401" parent="344" name="input_data">
+    <column id="399" parent="343" name="input_data">
       <DataType>text|0s</DataType>
-      <DefaultExpression>&apos;None&apos;</DefaultExpression>
+      <DefaultExpression>&apos;eval empty&apos;</DefaultExpression>
       <Position>7</Position>
     </column>
-    <column id="402" parent="344" name="input_sentiment">
+    <column id="400" parent="343" name="input_sentiment">
       <DataType>varchar(64)|0s</DataType>
       <NotNull>1</NotNull>
       <Position>8</Position>
     </column>
-    <column id="403" parent="344" name="is_predicted">
-      <DataType>varchar(6)|0s</DataType>
+    <column id="401" parent="343" name="date_evaluated">
+      <DataType>timestamp|0s</DataType>
+      <DefaultExpression>current_timestamp()</DefaultExpression>
       <NotNull>1</NotNull>
+      <OnUpdate>current_timestamp()</OnUpdate>
       <Position>9</Position>
     </column>
-    <column id="404" parent="344" name="date_analyzed">
-      <DataType>timestamp|0s</DataType>
-      <Position>10</Position>
-    </column>
-    <column id="405" parent="344" name="school_year_and_semester">
+    <column id="402" parent="343" name="school_year_and_semester">
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
-      <Position>11</Position>
+      <Position>10</Position>
     </column>
-    <index id="406" parent="344" name="PRIMARY">
+    <index id="403" parent="343" name="PRIMARY">
       <ColNames>predicted_data_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="407" parent="344" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <column id="408" parent="345" name="id_number">
-      <AutoIncrement>21804</AutoIncrement>
-      <DataType>int(255)|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-    </column>
-    <column id="409" parent="345" name="NAME">
-      <DataType>varchar(255)|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-    </column>
-    <column id="410" parent="345" name="DEPTPROGRAM">
-      <DataType>varchar(3)|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-    </column>
-    <column id="411" parent="345" name="COURSE_CODE">
-      <DataType>varchar(50)|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-    </column>
-    <column id="412" parent="345" name="COURSE_TITLE">
-      <DataType>varchar(5)|0s</DataType>
-      <NotNull>1</NotNull>
-      <Position>5</Position>
-    </column>
-    <column id="413" parent="345" name="What_are_the_strengths_of_the_instructor_in_teaching_the_course">
-      <DataType>varchar(1215)|0s</DataType>
-      <Position>6</Position>
-    </column>
-    <column id="414" parent="345" name="What_are_the_areas_of_improvement_for_the_instructor">
-      <DataType>varchar(1228)|0s</DataType>
-      <Position>7</Position>
-    </column>
-    <index id="415" parent="345" name="PRIMARY">
-      <ColNames>id_number</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <key id="416" parent="345" name="PRIMARY">
+    <key id="404" parent="343" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>

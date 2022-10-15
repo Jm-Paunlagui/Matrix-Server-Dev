@@ -13,23 +13,8 @@
         <introspection-scope>
           <node kind="schema">
             <name qname="@" />
-            <name qname="dummy_eval" />
             <name qname="production_saer" />
           </node>
-        </introspection-scope>
-      </schema-mapping>
-    </data-source>
-    <data-source name="@localhost [2]" uuid="99b4c2d2-2399-4e4e-8d3e-8a164c1f5a95">
-      <database-info product="MariaDB" version="10.4.24-MariaDB" jdbc-version="4.2" driver-name="MariaDB Connector/J" driver-version="3.0.7" dbms="MARIADB" exact-version="10.4.24" exact-driver-version="3.0">
-        <extra-name-characters>#@</extra-name-characters>
-        <identifier-quote-string>`</identifier-quote-string>
-      </database-info>
-      <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower" />
-      <secret-storage>master_key</secret-storage>
-      <user-name>root</user-name>
-      <schema-mapping>
-        <introspection-scope>
-          <node kind="schema" qname="@" />
         </introspection-scope>
       </schema-mapping>
     </data-source>
